@@ -47,7 +47,7 @@ inline std::string format(const char *fmt)
 template <typename T, typename... Trest>
 std::string format(const char *_fmt, T value, Trest... rest)
 {
-    const char *fmt = _fmt;
+    auto *fmt = _fmt;
     std::stringstream ss;
     for (; *fmt != '\0'; fmt++) {
         if (*fmt == '%') {
