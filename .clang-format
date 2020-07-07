@@ -4,3 +4,6 @@ PointerAlignment: Right
 TabWidth: '4'
 UseTab: Never
 SortIncludes: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AlwaysBreakTemplateDeclarations: Yes
