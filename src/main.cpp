@@ -13,8 +13,6 @@ class App {
     Renderer *m_renderer;
 
 public:
-    App() = default;
-
     bool init()
     {
         SDL_Init(SDL_INIT_VIDEO);
@@ -35,7 +33,7 @@ public:
         return true;
     }
 
-    ~App()
+    void deinit()
     {
         Renderer::destroyRenderer(m_renderer);
         SDL_DestroyWindow(m_window);
@@ -46,16 +44,16 @@ public:
     {
         bool quit = false;
         while (!quit) {
-            SDL_Event sdl_event;
-            while (SDL_PollEvent(&sdl_event)) {
-                uint32_t type = sdl_event.type;
+            SDL_Event sdlEvent;
+            while (SDL_PollEvent(&sdlEvent)) {
+                uint32_t type = sdlEvent.type;
                 switch (type) {
                 case SDL_QUIT: {
                     quit = true;
                 } break;
 
                 case SDL_KEYDOWN: {
-                    if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
                         quit = true;
                     }
                 } break;
@@ -88,5 +86,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
     app.run();
+    app.deinit();
     return EXIT_SUCCESS;
 }
