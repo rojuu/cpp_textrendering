@@ -5,7 +5,7 @@
 #include "renderer.hpp"
 #include <iostream>
 
-class Main {
+class App {
     static constexpr int WIDTH = 1280;
     static constexpr int HEIGHT = 720;
 
@@ -13,7 +13,9 @@ class Main {
     Renderer *m_renderer;
 
 public:
-    Main()
+    App() = default;
+
+    bool init()
     {
         SDL_Init(SDL_INIT_VIDEO);
         m_window = SDL_CreateWindow("cplayground", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -21,17 +23,19 @@ public:
 
         if (!m_window) {
             std::cerr << "Failed to create window: ", SDL_GetError();
-            exit(EXIT_FAILURE);
+            return false;
         }
 
         m_renderer = Renderer::createRenderer(m_window);
         if (!m_renderer) {
             std::cerr << "Failed to init renderer: ", SDL_GetError();
-            exit(EXIT_FAILURE);
+            return false;
         }
+
+        return true;
     }
 
-    ~Main()
+    ~App()
     {
         Renderer::destroyRenderer(m_renderer);
         SDL_DestroyWindow(m_window);
@@ -75,10 +79,14 @@ public:
     }
 };
 
-static Main mainClass;
+static App app;
 
 int main(int argc, char **argv)
 {
-    mainClass.run();
+    if (!app.init()) {
+        std::cerr << "Failed to init application" << std::endl;
+        return EXIT_FAILURE;
+    }
+    app.run();
     return EXIT_SUCCESS;
 }
