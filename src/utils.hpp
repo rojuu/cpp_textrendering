@@ -31,13 +31,8 @@ public:
     }
 };
 
-class ScopedBinaryFile {
-    std::vector<uint8_t> m_data;
-
-public:
-    bool readEntireFile(const char *filename);
-    const uint8_t *data() const { return m_data.data(); }
-};
+uint8_t *readEntireBinaryFile(const char *filename);
+void freeBinaryFileContents(uint8_t *contents);
 
 inline std::string format(const char *fmt)
 {

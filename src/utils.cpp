@@ -2,22 +2,26 @@
 #include <fstream>
 #include <iostream>
 
-bool ScopedBinaryFile::readEntireFile(const char *filename)
+uint8_t *readEntireBinaryFile(const char *filename)
 {
     std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
 
     if (!file.is_open()) {
         std::cerr << format("Failed to open file %\n", filename);
-        return false;
+        return nullptr;
     }
 
     size_t size = file.tellg();
     file.seekg(file.beg);
 
-    m_data.clear();
-    m_data.reserve(size);
+    uint8_t *data = new uint8_t[size];
 
-    file.read((char *)m_data.data(), size);
+    file.read((char *)data, size);
 
-    return true;
+    return data;
+}
+
+void freeBinaryFileContents(uint8_t *contents)
+{
+    delete[] contents;
 }

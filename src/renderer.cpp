@@ -18,8 +18,14 @@ Renderer *Renderer::createRenderer(SDL_Window *window)
         return nullptr;
     }
 
-    renderer->m_defaultFontData.readEntireFile("Roboto-Regular.ttf");
-    stbtt_InitFont(&renderer->m_defaultFont, renderer->m_defaultFontData.data(), 0);
+    renderer->m_defaultFontData = readEntireBinaryFile("Roboto-Regular.ttf");
+    if (!renderer->m_defaultFontData) {
+        std::cerr << "Failed to load default font\n";
+        delete renderer;
+        return nullptr;
+    }
+
+    stbtt_InitFont(&renderer->m_defaultFont, renderer->m_defaultFontData, 0);
 
     return renderer;
 }
@@ -40,6 +46,8 @@ void Renderer::destroyRenderer(Renderer *renderer)
     }
 
     SDL_DestroyRenderer(renderer->m_sdlRenderer);
+
+    freeBinaryFileContents(renderer->m_defaultFontData);
 
     delete renderer;
 }
