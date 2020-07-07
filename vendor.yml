@@ -1,0 +1,6 @@
+# Vendored files and directories are excluded from language
+# statistics.
+#
+# See example: https://github.com/github/linguist/blob/master/lib/linguist/vendor.yml
+
+- ^deps/
