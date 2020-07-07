@@ -10,7 +10,7 @@
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_defaultFont;
-    BinaryFile m_defaultFontData;
+    ScopedBinaryFile m_defaultFontData;
 
     struct GlyphData {
         SDL_Texture *texture;

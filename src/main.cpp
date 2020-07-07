@@ -16,17 +16,17 @@ public:
     bool init()
     {
         SDL_Init(SDL_INIT_VIDEO);
-        m_window = SDL_CreateWindow("cplayground", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        m_window = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
 
         if (!m_window) {
-            std::cerr << "Failed to create window: ", SDL_GetError();
+            std::cerr << format("Failed to create window: %\n", SDL_GetError());
             return false;
         }
 
         m_renderer = Renderer::createRenderer(m_window);
         if (!m_renderer) {
-            std::cerr << "Failed to init renderer: ", SDL_GetError();
+            std::cerr << "Failed to create renderer\n";
             return false;
         }
 
@@ -82,7 +82,7 @@ static App app;
 int main(int argc, char **argv)
 {
     if (!app.init()) {
-        std::cerr << "Failed to init application" << std::endl;
+        std::cerr << "Failed to init application\n";
         return EXIT_FAILURE;
     }
     app.run();
