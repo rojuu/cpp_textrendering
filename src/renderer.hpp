@@ -5,8 +5,6 @@
 #include "stb_truetype.h"
 #include "SDL.h"
 
-#include <unordered_map>
-
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_defaultFont;
@@ -17,7 +15,7 @@ class Renderer {
         int width, height;
         int offset_x, offset_y;
     };
-    std::unordered_map<int, std::unordered_map<char, GlyphData>> m_fontSizeToGlyphDataMap;
+    HashMap<int, HashMap<char, GlyphData>> m_fontSizeToGlyphDataMap;
 
 public:
     static Renderer *createRenderer(SDL_Window *window);

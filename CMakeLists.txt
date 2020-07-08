@@ -14,6 +14,8 @@ add_executable(${This}
     src/main.cpp
 )
 
+set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
+
 add_subdirectory(deps/SDL2)
 
 target_link_libraries(${This} PRIVATE SDL2)

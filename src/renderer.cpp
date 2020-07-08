@@ -4,7 +4,6 @@
 #include "SDL.h"
 
 #include <iostream>
-#include <vector>
 
 Renderer *Renderer::createRenderer(SDL_Window *window)
 {
@@ -132,7 +131,7 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
         }
     } else {
         result = createGlyphData(character, pixelSize);
-        std::unordered_map<char, GlyphData> glyphMap;
+        HashMap<char, GlyphData> glyphMap;
         glyphMap[character] = result;
         m_fontSizeToGlyphDataMap[pixelSize] = glyphMap;
     }
@@ -142,7 +141,7 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
 
 void Renderer::printText(const char *text, int pixelSize, int x, int y)
 {
-    std::vector<GlyphData> glyphDatas;
+    DynArray<GlyphData> glyphDatas;
     for (int ch = 0; text[ch]; ++ch) {
         glyphDatas.emplace_back(getOrCreateGlyphData(text[ch], pixelSize));
     }
