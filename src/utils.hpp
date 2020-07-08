@@ -29,24 +29,3 @@ DeferWrapper<Func> deferFunc(Func f)
 
 uint8_t *readEntireBinaryFile(const char *filename);
 void freeBinaryFileContents(uint8_t *contents);
-
-inline std::string format(const char *fmt)
-{
-    return fmt;
-}
-
-template <typename T, typename... Trest>
-std::string format(const char *_fmt, T value, Trest... rest)
-{
-    auto *fmt = _fmt;
-    std::stringstream ss;
-    for (; *fmt != '\0'; fmt++) {
-        if (*fmt == '%') {
-            ss << value;
-            ss << format(fmt + 1, rest...);
-            return ss.str();
-        }
-        ss << *fmt;
-    }
-    return ss.str();
-}

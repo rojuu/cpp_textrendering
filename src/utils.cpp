@@ -7,7 +7,7 @@ uint8_t *readEntireBinaryFile(const char *filename)
     std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
 
     if (!file.is_open()) {
-        std::cerr << format("Failed to open file %\n", filename);
+        std::cerr << "Failed to open file " << filename << "\n";
         return nullptr;
     }
 

@@ -12,7 +12,7 @@ Renderer *Renderer::createRenderer(SDL_Window *window)
     renderer->m_sdlRenderer
         = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer->m_sdlRenderer) {
-        std::cerr << format("Render backend failed to initalize SDL_Renderer: %\n", SDL_GetError());
+        std::cerr << "Render backend failed to initalize SDL_Renderer: " << SDL_GetError() << "\n";
         delete renderer;
         return nullptr;
     }
@@ -84,7 +84,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 
     SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
     if (!surface) {
-        std::cerr << format("Failed to create SDL_Surface: %\n", SDL_GetError());
+        std::cerr << "Failed to create SDL_Surface: " << SDL_GetError() << "\n";
         return result;
     }
 
@@ -99,7 +99,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
     if (!texture) {
-        std::cerr << format("Failed to create SDL_Texturer: %\n", SDL_GetError());
+        std::cerr << "Failed to create SDL_Texturer: " << SDL_GetError() << "\n";
         return result;
     }
     SDL_FreeSurface(surface);

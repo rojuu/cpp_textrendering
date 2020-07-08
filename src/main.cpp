@@ -20,7 +20,7 @@ public:
             WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
 
         if (!m_window) {
-            std::cerr << format("Failed to create window: %\n", SDL_GetError());
+            std::cerr << "Failed to create window: " << SDL_GetError() << "\n";
             return false;
         }
 
