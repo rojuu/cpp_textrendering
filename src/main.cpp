@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include "types.hpp"
 
 #include "SDL.h"
 

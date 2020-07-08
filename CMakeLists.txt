@@ -4,7 +4,7 @@ set(This rojuide)
 project(${This})
 
 add_executable(${This}
-    src/common.hpp
+    src/types.hpp
     src/utils.hpp
     src/utils.cpp
     src/renderer.hpp

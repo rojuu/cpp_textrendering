@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.hpp"
+#include "types.hpp"
 #include "utils.hpp"
 #include "stb_truetype.h"
 #include "SDL.h"
