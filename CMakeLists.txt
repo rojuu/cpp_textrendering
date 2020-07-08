@@ -7,11 +7,11 @@ add_subdirectory(deps)
 add_subdirectory(src/tests)
 
 add_executable(${This}
-    src/types.hpp
-    src/utils.hpp
-    src/utils.cpp
-    src/renderer.hpp
-    src/renderer.cpp
+    src/Types.hpp
+    src/Utils.hpp
+    src/Utils.cpp
+    src/Renderer.hpp
+    src/Renderer.cpp
     src/stb_truetype.h
     src/stb_truetype.cpp
     src/main.cpp

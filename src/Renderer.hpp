@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.hpp"
-#include "utils.hpp"
+#include "Types.hpp"
+#include "Utils.hpp"
 #include "stb_truetype.h"
 #include "SDL.h"
 

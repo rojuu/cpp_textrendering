@@ -1,8 +1,8 @@
-#include "types.hpp"
+#include "Types.hpp"
 
 #include "SDL.h"
 
-#include "renderer.hpp"
+#include "Renderer.hpp"
 #include <iostream>
 
 class App {

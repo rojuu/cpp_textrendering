@@ -1,5 +1,5 @@
-#include "renderer.hpp"
-#include "utils.hpp"
+#include "Renderer.hpp"
+#include "Utils.hpp"
 
 #include "SDL.h"
 
