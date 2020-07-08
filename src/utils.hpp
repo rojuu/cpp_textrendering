@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.hpp"
-#include <sstream>
 
 template <typename Func>
 struct DeferWrapper {
@@ -27,5 +26,5 @@ DeferWrapper<Func> deferFunc(Func f)
         code;                                                                                      \
     })
 
-uint8_t *readEntireBinaryFile(const char *filename);
+uint8_t *readEntireBinaryFile(std::string_view filename);
 void freeBinaryFileContents(uint8_t *contents);

@@ -5,6 +5,8 @@
 #include "stb_truetype.h"
 #include "SDL.h"
 
+#include <string_view>
+
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_defaultFont;
@@ -13,7 +15,7 @@ class Renderer {
     struct GlyphData {
         SDL_Texture *texture;
         int width, height;
-        int offset_x, offset_y;
+        int xOffset, yOffset;
     };
     HashMap<int, HashMap<char, GlyphData>> m_fontSizeToGlyphDataMap;
 
@@ -24,7 +26,7 @@ public:
     void clear(uint8_t r, uint8_t g, uint8_t b);
     void present();
 
-    void printText(const char *text, int pixelSize, int x, int y);
+    void drawText(std::string_view text, int pixelSize, int x, int y);
 
 private:
     void setSurfacePixelColor(

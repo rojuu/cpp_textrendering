@@ -2,9 +2,9 @@
 #include <fstream>
 #include <iostream>
 
-uint8_t *readEntireBinaryFile(const char *filename)
+uint8_t *readEntireBinaryFile(std::string_view filename)
 {
-    std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
+    std::ifstream file(filename.data(), std::ifstream::binary | std::ifstream::ate);
 
     if (!file.is_open()) {
         std::cerr << "Failed to open file " << filename << "\n";

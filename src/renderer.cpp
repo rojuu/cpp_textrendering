@@ -107,8 +107,8 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
     result.texture = texture;
     result.width = w;
     result.height = h;
-    result.offset_x = xoff;
-    result.offset_y = yoff;
+    result.xOffset = xoff;
+    result.yOffset = yoff;
 
     stbtt_FreeBitmap(bmp, 0);
 
@@ -139,7 +139,7 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
     return result;
 }
 
-void Renderer::printText(const char *text, int pixelSize, int x, int y)
+void Renderer::drawText(std::string_view text, int pixelSize, int x, int y)
 {
     DynArray<GlyphData> glyphDatas;
     for (int ch = 0; text[ch]; ++ch) {
@@ -148,13 +148,13 @@ void Renderer::printText(const char *text, int pixelSize, int x, int y)
 
     for (auto &gd : glyphDatas) {
         if (gd.texture) { // for spaces we have null texture, but have to advance x
-            SDL_Rect dstRect { x + gd.offset_x, y + gd.offset_y, gd.width, gd.height };
-            SDL_Rect srcRect { gd.width, gd.height, 0, 0 };
+            SDL_Rect dstRect { x + gd.xOffset, y + gd.yOffset, gd.width, gd.height };
+            SDL_Rect srcRect { 0, 0, gd.width, gd.height };
 
             SDL_SetTextureBlendMode(gd.texture, SDL_BLENDMODE_ADD);
             SDL_RenderCopy(m_sdlRenderer, gd.texture, &srcRect, &dstRect);
         }
-        x += gd.width + gd.offset_x;
+        x += gd.width + gd.xOffset;
     }
 }
 
