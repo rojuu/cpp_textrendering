@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 set(This rojuide)
 project(${This})
 
+add_subdirectory(deps)
+add_subdirectory(src/tests)
+
 add_executable(${This}
     src/types.hpp
     src/utils.hpp
@@ -15,7 +18,4 @@ add_executable(${This}
 )
 
 set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
-
-add_subdirectory(deps/SDL2)
-
 target_link_libraries(${This} PRIVATE SDL2)
