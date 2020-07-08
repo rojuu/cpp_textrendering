@@ -4,7 +4,7 @@ set(This rojuide)
 project(${This})
 
 add_subdirectory(deps)
-add_subdirectory(src/tests)
+add_subdirectory(tests)
 
 add_executable(${This}
     src/Types.hpp
@@ -12,6 +12,7 @@ add_executable(${This}
     src/Utils.cpp
     src/Renderer.hpp
     src/Renderer.cpp
+    src/OLHashMap.hpp
     src/stb_truetype.h
     src/stb_truetype.cpp
     src/main.cpp
@@ -19,3 +20,4 @@ add_executable(${This}
 
 set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
 target_link_libraries(${This} PRIVATE SDL2)
+target_compile_options(${This} PRIVATE -fno-cxx-exceptions -fno-rtti)
