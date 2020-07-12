@@ -19,8 +19,6 @@ public:
         m_window = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
 
-        printErr("Foo bar % ,  % ,%\n", 1, 3, "yay");
-        print("isfd Foo bar % ,  % ,% %\n", 1, 3, "yay");
         if (!m_window) {
             printErr("Failed to create window: %\n", SDL_GetError());
             return false;
