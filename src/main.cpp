@@ -19,14 +19,16 @@ public:
         m_window = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
 
+        printErr("Foo bar % ,  % ,%\n", 1, 3, "yay");
+        print("isfd Foo bar % ,  % ,% %\n", 1, 3, "yay");
         if (!m_window) {
-            std::cerr << "Failed to create window: " << SDL_GetError() << "\n";
+            printErr("Failed to create window: %\n", SDL_GetError());
             return false;
         }
 
         m_renderer = Renderer::createRenderer(m_window);
         if (!m_renderer) {
-            std::cerr << "Failed to create renderer\n";
+            printErr("Failed to create renderer\n");
             return false;
         }
 
@@ -82,7 +84,7 @@ static App app;
 int main(int argc, char **argv)
 {
     if (!app.init()) {
-        std::cerr << "Failed to init application\n";
+        printErr("Failed to init application\n");
         return EXIT_FAILURE;
     }
     app.run();

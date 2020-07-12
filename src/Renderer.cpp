@@ -12,14 +12,14 @@ Renderer *Renderer::createRenderer(SDL_Window *window)
     renderer->m_sdlRenderer
         = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer->m_sdlRenderer) {
-        std::cerr << "Render backend failed to initalize SDL_Renderer: " << SDL_GetError() << "\n";
+        printErr("Render backend failed to initalize SDL_Renderer: %\n", SDL_GetError());
         delete renderer;
         return nullptr;
     }
 
     renderer->m_defaultFontData = readEntireBinaryFile("Roboto-Regular.ttf");
     if (!renderer->m_defaultFontData) {
-        std::cerr << "Failed to load default font\n";
+        printErr("Failed to load default font\n");
         delete renderer;
         return nullptr;
     }
@@ -84,7 +84,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 
     SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
     if (!surface) {
-        std::cerr << "Failed to create SDL_Surface: " << SDL_GetError() << "\n";
+        printErr("Failed to create SDL_Surface: %\n", SDL_GetError());
         return result;
     }
 
@@ -99,7 +99,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
     if (!texture) {
-        std::cerr << "Failed to create SDL_Texturer: " << SDL_GetError() << "\n";
+        printErr("Failed to create SDL_Texture: %\n", SDL_GetError());
         return result;
     }
     SDL_FreeSurface(surface);
@@ -139,7 +139,7 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
     return result;
 }
 
-void Renderer::drawText(std::string_view text, int pixelSize, int x, int y)
+void Renderer::drawText(const char *text, int pixelSize, int x, int y)
 {
     DynArray<GlyphData> glyphDatas;
     for (int ch = 0; text[ch]; ++ch) {

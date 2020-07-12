@@ -5,8 +5,6 @@
 #include "stb_truetype.h"
 #include "SDL.h"
 
-#include <string_view>
-
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_defaultFont;
@@ -26,7 +24,7 @@ public:
     void clear(uint8_t r, uint8_t g, uint8_t b);
     void present();
 
-    void drawText(std::string_view text, int pixelSize, int x, int y);
+    void drawText(const char *text, int pixelSize, int x, int y);
 
 private:
     void setSurfacePixelColor(
