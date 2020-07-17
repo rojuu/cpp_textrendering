@@ -17,14 +17,14 @@ Renderer *Renderer::createRenderer(SDL_Window *window)
         return nullptr;
     }
 
-    renderer->m_defaultFontData = readEntireBinaryFile("Roboto-Regular.ttf");
-    if (!renderer->m_defaultFontData) {
+    renderer->m_currentFontData = readEntireBinaryFile("Roboto-Regular.ttf");
+    if (!renderer->m_currentFontData) {
         printErr("Failed to load default font\n");
         delete renderer;
         return nullptr;
     }
 
-    stbtt_InitFont(&renderer->m_defaultFont, renderer->m_defaultFontData, 0);
+    stbtt_InitFont(&renderer->m_currentFont, renderer->m_currentFontData, 0);
 
     return renderer;
 }
@@ -35,20 +35,24 @@ void Renderer::destroyRenderer(Renderer *renderer)
         return;
     }
 
-    // SDL_Textures need to be destroyd manually
-    for (auto &glyphDataIt : renderer->m_fontSizeToGlyphDataMap) {
-        for (auto &gd : glyphDataIt.second) {
-            if (gd.second.texture) {
-                SDL_DestroyTexture(gd.second.texture);
-            }
-        }
-    }
+    renderer->destroyFontCache();
 
     SDL_DestroyRenderer(renderer->m_sdlRenderer);
 
-    freeBinaryFileContents(renderer->m_defaultFontData);
+    freeBinaryFileContents(renderer->m_currentFontData);
 
     delete renderer;
+}
+
+void Renderer::destroyFontCache()
+{
+    // SDL_Textures need to be destroyd manually
+    for (auto &it : m_glyphDataMap) {
+        auto &glyphData = it.second;
+        if (glyphData.texture) {
+            SDL_DestroyTexture(glyphData.texture);
+        }
+    }
 }
 
 void Renderer::clear(uint8_t r, uint8_t g, uint8_t b)
@@ -66,16 +70,16 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 {
     GlyphData result = {};
 
-    float fontScale = stbtt_ScaleForPixelHeight(&m_defaultFont, (float)pixelSize);
+    float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, (float)pixelSize);
 
     int w, h, xoff, yoff;
     uint8_t *bmp = stbtt_GetCodepointBitmap(
-        &m_defaultFont, fontScale, fontScale, character, &w, &h, &xoff, &yoff);
+        &m_currentFont, fontScale, fontScale, character, &w, &h, &xoff, &yoff);
     if (!w || !h) {
         stbtt_FreeBitmap(bmp, 0);
 
         int advance, leftSideBearing;
-        stbtt_GetCodepointHMetrics(&m_defaultFont, character, &advance, &leftSideBearing);
+        stbtt_GetCodepointHMetrics(&m_currentFont, character, &advance, &leftSideBearing);
 
         result.width = (int)(fontScale * advance);
 
@@ -119,21 +123,21 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
 {
     GlyphData result;
 
-    const auto glyphMapIt = m_fontSizeToGlyphDataMap.find(pixelSize);
-    if (glyphMapIt != m_fontSizeToGlyphDataMap.end()) {
-        auto &glyphMap = glyphMapIt->second;
-        const auto glyphDataIt = glyphMap.find(character);
-        if (glyphDataIt != glyphMap.end()) {
-            result = glyphDataIt->second;
-        } else {
-            result = createGlyphData(character, pixelSize);
-            glyphMap[character] = result;
-        }
-    } else {
+    const auto create = [&]() {
         result = createGlyphData(character, pixelSize);
-        HashMap<char, GlyphData> glyphMap;
-        glyphMap[character] = result;
-        m_fontSizeToGlyphDataMap[pixelSize] = glyphMap;
+        m_glyphDataMap[character] = result;
+    };
+    if (pixelSize != m_currentFontSize) {
+        m_currentFontSize = pixelSize;
+        destroyFontCache();
+        create();
+    } else {
+        const auto it = m_glyphDataMap.find(character);
+        if (it == m_glyphDataMap.end()) {
+            create();
+        } else {
+            result = it->second;
+        }
     }
 
     return result;
