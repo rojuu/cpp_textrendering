@@ -127,7 +127,7 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
         result = createGlyphData(character, pixelSize);
         m_glyphDataMap[character] = result;
     };
-    if (pixelSize != m_currentFontSize) {
+    if (pixelSize != m_currentFontSize || m_currentFontSize == -1) {
         m_currentFontSize = pixelSize;
         destroyFontCache();
         create();
@@ -143,11 +143,11 @@ Renderer::GlyphData Renderer::getOrCreateGlyphData(char character, int pixelSize
     return result;
 }
 
-void Renderer::drawText(const char *text, int pixelSize, int x, int y)
+void Renderer::drawText(const char *text, int x, int y)
 {
     DynArray<GlyphData> glyphDatas;
     for (int ch = 0; text[ch]; ++ch) {
-        glyphDatas.emplace_back(getOrCreateGlyphData(text[ch], pixelSize));
+        glyphDatas.emplace_back(getOrCreateGlyphData(text[ch], m_currentFontSize));
     }
 
     for (auto &gd : glyphDatas) {

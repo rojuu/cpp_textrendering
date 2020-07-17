@@ -65,12 +65,12 @@ public:
 
             m_renderer->clear(91, 0, 176);
 
-            m_renderer->drawText("Heljo world!", 24, 35, 200);
-            m_renderer->drawText("Wassup world!", 24, 35, 250);
-            m_renderer->drawText("Heljo world!", 24, 35, 350);
-            m_renderer->drawText("Wassup world!", 24, 35, 400);
-            m_renderer->drawText("Wazzzaaaa!", 24, 35, 500);
-            m_renderer->drawText("Larger text?", 24, WIDTH / 2 - 100, HEIGHT / 2);
+            m_renderer->drawText("Heljo world!", 35, 200);
+            m_renderer->drawText("Wassup world!", 35, 250);
+            m_renderer->drawText("Heljo world!", 35, 350);
+            m_renderer->drawText("Wassup world!", 35, 400);
+            m_renderer->drawText("Wazzzaaaa!", 35, 500);
+            m_renderer->drawText("Larger text?", WIDTH / 2 - 100, HEIGHT / 2);
 
             m_renderer->present();
         }

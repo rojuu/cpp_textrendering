@@ -26,7 +26,7 @@ public:
     void clear(uint8_t r, uint8_t g, uint8_t b);
     void present();
 
-    void drawText(const char *text, int pixelSize, int x, int y);
+    void drawText(const char *text, int x, int y);
 
 private:
     void destroyFontCache();
