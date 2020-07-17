@@ -46,7 +46,7 @@ void Renderer::destroyRenderer(Renderer *renderer)
 
 void Renderer::destroyFontCache()
 {
-    // SDL_Textures need to be destroyd manually
+    // SDL_Textures need to be destroyed manually
     for (auto &it : m_glyphDataMap) {
         auto &glyphData = it.second;
         if (glyphData.texture) {
