@@ -9,7 +9,7 @@ class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_currentFont;
     uint8_t *m_currentFontData;
-    int m_currentFontSize { -1 };
+    int m_currentFontSize = -1;
     std::string m_currentFontFile;
 
     struct GlyphData {
@@ -19,8 +19,16 @@ class Renderer {
     };
     HashMap<char, GlyphData> m_glyphDataMap;
 
+    static constexpr int BufferFontPixelSize = 48;
+    int m_fontBufferWidth;
+    int m_fontBufferHeight;
+    DynArray<uint8_t> m_pixels;
+    DynArray<stbtt_bakedchar> m_charData;
+
+    Renderer() = default;
+
 public:
-    static constexpr int DefaultFontPixelSize = 14;
+    static constexpr int DefaultFontPixelSize = 24;
 
     static Renderer *createRenderer(SDL_Window *window);
     static void destroyRenderer(Renderer *renderer);

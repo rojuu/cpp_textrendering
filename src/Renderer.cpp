@@ -24,6 +24,20 @@ Renderer *Renderer::createRenderer(SDL_Window *window)
         return nullptr;
     }
 
+    renderer->m_fontBufferWidth = 512;
+    renderer->m_fontBufferHeight = 512;
+    renderer->m_pixels.reserve(
+        renderer->m_fontBufferWidth * renderer->m_fontBufferHeight * sizeof(m_pixels[0]));
+    renderer->m_charData.resize(512);
+    const int bakeFontResult = stbtt_BakeFontBitmap(renderer->m_currentFontData, 0,
+        BufferFontPixelSize, renderer->m_pixels.data(), renderer->m_fontBufferWidth,
+        renderer->m_fontBufferHeight, 0, renderer->m_charData.size(), renderer->m_charData.data());
+
+    if (bakeFontResult > 0) { // unused rows
+    } else { // fit this many characters (abs)
+        renderer->m_charData.resize(std::abs(bakeFontResult));
+    }
+
     stbtt_InitFont(&renderer->m_currentFont, renderer->m_currentFontData, 0);
 
     return renderer;
@@ -63,6 +77,49 @@ void Renderer::clear(uint8_t r, uint8_t g, uint8_t b)
 
 void Renderer::present()
 {
+    int w = m_fontBufferWidth, h = m_fontBufferHeight;
+
+    static bool initted = false;
+    static SDL_Texture *texture = nullptr;
+    if (!initted) {
+        static SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+        if (!surface) {
+            printErr("Failed to create SDL_Surface: %\n", SDL_GetError());
+            initted = true;
+            goto end;
+        }
+
+        SDL_LockSurface(surface);
+        for (int i = 0; i < surface->w && surface; ++i) {
+            for (int j = 0; j < surface->h; ++j) {
+                uint8_t alpha = m_pixels[j * surface->w + i];
+                setSurfacePixelColor(surface, i, j, alpha, alpha, alpha, alpha);
+            }
+        }
+        SDL_UnlockSurface(surface);
+
+        texture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
+        if (!texture) {
+            printErr("Failed to create SDL_Texture: %\n", SDL_GetError());
+        }
+        initted = true;
+    }
+end:
+
+    if (texture) {
+        SDL_Rect src;
+        src.w = m_fontBufferWidth;
+        src.h = m_fontBufferHeight;
+        src.x = 0;
+        src.y = 0;
+        SDL_Rect dst;
+        dst.h = m_fontBufferWidth;
+        dst.w = m_fontBufferHeight;
+        dst.x = 0;
+        dst.y = 0;
+        SDL_RenderCopy(m_sdlRenderer, texture, &src, &dst);
+    }
+
     SDL_RenderPresent(m_sdlRenderer);
 }
 
