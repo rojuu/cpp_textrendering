@@ -11,6 +11,7 @@ class OLHashMap {
     DynArray<Node> m_buckets;
 
 public:
+private: // INCOMPLETE: NOT IMPLEMENTED
     OLHashMap();
     ~OLHashMap();
     OLHashMap(const OLHashMap &);
