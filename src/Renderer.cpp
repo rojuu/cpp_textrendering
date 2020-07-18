@@ -147,8 +147,7 @@ void Renderer::drawText(const char *text, int x, int y)
 {
     DynArray<GlyphData> glyphDatas;
     for (int ch = 0; text[ch]; ++ch) {
-        constexpr int defaultFontPixelSize = 14;
-        const int pixelSize = m_currentFontSize == -1 ? defaultFontPixelSize : m_currentFontSize;
+        const int pixelSize = m_currentFontSize == -1 ? DefaultFontPixelSize : m_currentFontSize;
         glyphDatas.emplace_back(getOrCreateGlyphData(text[ch], pixelSize));
     }
 

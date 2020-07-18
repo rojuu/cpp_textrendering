@@ -20,6 +20,8 @@ class Renderer {
     HashMap<char, GlyphData> m_glyphDataMap;
 
 public:
+    static constexpr int DefaultFontPixelSize = 14;
+
     static Renderer *createRenderer(SDL_Window *window);
     static void destroyRenderer(Renderer *renderer);
 
