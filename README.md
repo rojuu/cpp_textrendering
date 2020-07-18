@@ -1,3 +1,3 @@
-# Beginnings of an IDE?
+# Beginnings of a simple text editor
 
-Not sure what this projecct will be yet, but it is supposed be a native IDE or something like that, though VSCode already pretty much fills that need for me so probably will turn out to be absolutely nothing.
+Not sure what this project will be yet fully, but it is supposed be a simple GUI text editor for simple tasks. Intention is to replace gedit with some addditional juice like fuzzy file open and grepping, also simpler UI with no clutter. Not intended to replace vscode as that is already quite good honestly. Just if I would want some quick editing without code completion and didn't want to use vim, this would be the goto editor for that. Compared to vscode advantages should be fast bootup, snappy to use etc, while keeping it simple. Should be very user friendly as well, same as vscode.
