@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 
-set(This rojuide)
+set(This rojueditor)
 project(${This})
 
 add_subdirectory(deps)
