@@ -127,7 +127,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 {
     GlyphData result = {};
 
-    float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, (float)pixelSize);
+    float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, static_cast<float>(pixelSize));
 
     int w, h, xoff, yoff;
     uint8_t *bmp = stbtt_GetCodepointBitmap(
@@ -138,7 +138,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
         int advance, leftSideBearing;
         stbtt_GetCodepointHMetrics(&m_currentFont, character, &advance, &leftSideBearing);
 
-        result.width = (int)(fontScale * advance);
+        result.width = static_cast<int>(fontScale * advance);
 
         return result;
     }
