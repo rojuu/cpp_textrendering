@@ -1,3 +1,4 @@
+// TODO: draw using font buffer instead of individual glyphs
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_currentFont;
@@ -85,7 +86,7 @@ public:
 
     void present()
     {
-        int w = m_fontBufferWidth, h = m_fontBufferHeight;
+        const int w = m_fontBufferWidth, h = m_fontBufferHeight;
 
         static bool initted = false;
         static SDL_Texture *texture = nullptr;
