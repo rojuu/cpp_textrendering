@@ -3,7 +3,7 @@ set(This unittests)
 enable_testing()
 
 add_executable(${This}
-    OLHashMap.cpp
+    Containers.cpp
 )
 
 add_test(NAME ${This} COMMAND ${This})

@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "Types.hpp"
-
-#include "OLHashMap.hpp"
+#include "Containers.hpp"
 
 TEST(OLHashMap, passes)
 {

@@ -3,7 +3,9 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-#include "Types.hpp"
+#include <cstdint>
+
+#include "Containers.hpp"
 #include "Utils.hpp"
 
 #include "Renderer.hpp"
