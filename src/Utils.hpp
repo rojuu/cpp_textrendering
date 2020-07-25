@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Types.hpp"
-#include <iostream>
 #include <fmt/format.h>
 
 template <typename Func>
@@ -34,11 +33,11 @@ void freeBinaryFileContents(uint8_t *contents);
 template <typename... Args>
 void print(const char *fmt, Args... rest)
 {
-    std::cout << fmt::format(fmt, std::forward<Args>(rest)...);
+    fmt::print(stdout, fmt, std::forward<Args>(rest)...);
 }
 
 template <typename... Args>
 void printErr(const char *fmt, Args... rest)
 {
-    std::cerr << fmt::format(fmt, std::forward<Args>(rest)...);
+    fmt::print(stderr, fmt, std::forward<Args>(rest)...);
 }
