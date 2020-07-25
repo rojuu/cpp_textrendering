@@ -1,7 +1,6 @@
-#pragma once
-
-#include "Types.hpp"
 #include <fmt/format.h>
+#include <fstream>
+#include <iostream>
 
 template <typename Func>
 struct DeferWrapper {
@@ -27,8 +26,29 @@ DeferWrapper<Func> deferFunc(Func f)
         code;                                                                                      \
     })
 
-uint8_t *readEntireBinaryFile(const char *filename);
-void freeBinaryFileContents(uint8_t *contents);
+inline uint8_t *readEntireBinaryFile(const char *filename)
+{
+    std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file " << filename << "\n";
+        return nullptr;
+    }
+
+    size_t size = file.tellg();
+    file.seekg(file.beg);
+
+    uint8_t *data = new uint8_t[size];
+
+    file.read((char *)data, size);
+
+    return data;
+}
+
+inline void freeBinaryFileContents(uint8_t *contents)
+{
+    delete[] contents;
+}
 
 template <typename... Args>
 void print(const char *fmt, Args... rest)

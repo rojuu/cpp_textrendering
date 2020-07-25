@@ -1,7 +1,3 @@
-#pragma once
-
-#include "Types.hpp"
-
 /// Open addressing linear probing hashmap
 template <typename K, typename V>
 class OLHashMap {

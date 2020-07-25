@@ -7,14 +7,7 @@ add_subdirectory(deps)
 add_subdirectory(tests)
 
 add_executable(${This}
-    src/Types.hpp
-    src/Utils.hpp
-    src/Utils.cpp
-    src/Renderer.hpp
-    src/Renderer.cpp
-    src/OLHashMap.hpp
-    src/stb_truetype.h
-    src/stb_truetype.cpp
+    src/SpookyV2.cpp
     src/main.cpp
 )
 

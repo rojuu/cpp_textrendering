@@ -1,6 +1,10 @@
-#include "Types.hpp"
-
 #include "SDL.h"
+
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
+
+#include "Types.hpp"
+#include "Utils.hpp"
 
 #include "Renderer.hpp"
 #include <iostream>
