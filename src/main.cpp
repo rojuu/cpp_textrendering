@@ -20,7 +20,7 @@ public:
             WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
 
         if (!m_window) {
-            printErr("Failed to create window: %\n", SDL_GetError());
+            printErr("Failed to create window: {}\n", SDL_GetError());
             return false;
         }
 

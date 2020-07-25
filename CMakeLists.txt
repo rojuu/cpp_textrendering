@@ -20,4 +20,5 @@ add_executable(${This}
 
 set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
 target_link_libraries(${This} PRIVATE SDL2)
+target_link_libraries(${This} PRIVATE fmt)
 target_compile_options(${This} PRIVATE -fno-cxx-exceptions -fno-rtti)

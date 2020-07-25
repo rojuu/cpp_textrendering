@@ -84,7 +84,7 @@ void Renderer::present()
     if (!initted) {
         static SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
         if (!surface) {
-            printErr("Failed to create SDL_Surface: %\n", SDL_GetError());
+            printErr("Failed to create SDL_Surface: {}\n", SDL_GetError());
             initted = true;
             goto end;
         }
@@ -100,7 +100,7 @@ void Renderer::present()
 
         texture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
         if (!texture) {
-            printErr("Failed to create SDL_Texture: %\n", SDL_GetError());
+            printErr("Failed to create SDL_Texture: {}\n", SDL_GetError());
         }
         initted = true;
     }
@@ -145,7 +145,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 
     SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
     if (!surface) {
-        printErr("Failed to create SDL_Surface: %\n", SDL_GetError());
+        printErr("Failed to create SDL_Surface: {}\n", SDL_GetError());
         return result;
     }
 
@@ -160,7 +160,7 @@ Renderer::GlyphData Renderer::createGlyphData(char character, int pixelSize)
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
     if (!texture) {
-        printErr("Failed to create SDL_Texture: %\n", SDL_GetError());
+        printErr("Failed to create SDL_Texture: {}\n", SDL_GetError());
         return result;
     }
     SDL_FreeSurface(surface);
