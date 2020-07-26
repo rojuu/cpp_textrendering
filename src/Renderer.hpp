@@ -61,6 +61,11 @@ public:
         freeBinaryFileContents(m_currentFontData);
     }
 
+    Renderer(const Renderer &) = delete;
+    auto operator=(const Renderer &) -> Renderer & = delete;
+    Renderer(Renderer &&) = delete;
+    auto operator=(Renderer &&) -> Renderer & = delete;
+
     void clear(uint8_t r, uint8_t g, uint8_t b) const noexcept
     {
         SDL_SetRenderDrawColor(m_sdlRenderer, r, g, b, 255);
@@ -69,7 +74,8 @@ public:
 
     void present() const noexcept
     {
-        const int w = m_fontBufferWidth, h = m_fontBufferHeight;
+        const int w = m_fontBufferWidth;
+        const int h = m_fontBufferHeight;
 
         static bool initted = false;
         static SDL_Texture *texture = nullptr;
@@ -140,16 +146,16 @@ private:
     void destroyFontCache() const noexcept
     {
         // SDL_Textures need to be destroyed manually
-        for (auto &it : m_glyphDataMap) {
-            auto &glyphData = it.second;
+        for (const auto &it : m_glyphDataMap) {
+            const auto &glyphData = it.second;
             if (glyphData.texture) {
                 SDL_DestroyTexture(glyphData.texture);
             }
         }
     }
 
-    void setSurfacePixelColor(
-        SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) const
+    static void setSurfacePixelColor(
+        SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         int off = y * surface->w + x;
         uint32_t *ptr = ((uint32_t *)surface->pixels) + off;

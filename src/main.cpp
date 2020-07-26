@@ -19,8 +19,8 @@ class App {
     static constexpr int WIDTH = 1280;
     static constexpr int HEIGHT = 720;
 
-    SDL_Window *m_window;
-    Renderer m_renderer;
+    SDL_Window *m_window { initAndCreateWindow() };
+    Renderer m_renderer { m_window };
 
     static SDL_Window *initAndCreateWindow()
     {
@@ -37,17 +37,17 @@ class App {
     }
 
 public:
-    App()
-        : m_window { initAndCreateWindow() }
-        , m_renderer { m_window }
-    {
-    }
-
+    App() = default;
     ~App() noexcept
     {
         SDL_DestroyWindow(m_window);
         SDL_Quit();
     }
+
+    App(const App &) = delete;
+    App &operator=(const App &) = delete;
+    App(App &&) = delete;
+    App &operator=(App &&) = delete;
 
     void run()
     {
