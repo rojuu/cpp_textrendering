@@ -11,13 +11,13 @@ class Renderer {
         int width, height;
         int xOffset, yOffset;
     };
-    HashMap<char, GlyphData> m_glyphDataMap;
+    std::unordered_map<char, GlyphData> m_glyphDataMap;
 
     static constexpr int BufferFontPixelSize = 48;
     int m_fontBufferWidth;
     int m_fontBufferHeight;
-    DynArray<uint8_t> m_pixels;
-    DynArray<stbtt_bakedchar> m_charData;
+    std::vector<uint8_t> m_pixels;
+    std::vector<stbtt_bakedchar> m_charData;
 
     Renderer() = default;
 
@@ -134,7 +134,7 @@ public:
 
     void drawText(const char *text, int x, int y)
     {
-        DynArray<GlyphData> glyphDatas;
+        std::vector<GlyphData> glyphDatas;
         for (int ch = 0; text[ch]; ++ch) {
             const int pixelSize
                 = m_currentFontSize == -1 ? DefaultFontPixelSize : m_currentFontSize;

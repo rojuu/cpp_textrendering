@@ -1,7 +1,3 @@
-#include <fmt/format.h>
-#include <fstream>
-#include <iostream>
-
 template <typename Func>
 struct DeferWrapper {
     Func f;

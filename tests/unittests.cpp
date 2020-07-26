@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "Containers.hpp"
-
-TEST(OLHashMap, passes)
+TEST(Stub, passes)
 {
     ASSERT_TRUE(true);
 }

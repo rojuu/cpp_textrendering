@@ -7,11 +7,11 @@ add_subdirectory(deps)
 add_subdirectory(tests)
 
 add_executable(${This}
-    src/SpookyV2.cpp
     src/main.cpp
 )
 
 set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
 target_link_libraries(${This} PRIVATE SDL2)
 target_link_libraries(${This} PRIVATE fmt)
+target_include_directories(${This} PRIVATE deps/include)
 target_compile_options(${This} PRIVATE -fno-exceptions -fno-rtti)

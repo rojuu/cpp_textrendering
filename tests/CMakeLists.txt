@@ -3,7 +3,7 @@ set(This unittests)
 enable_testing()
 
 add_executable(${This}
-    Containers.cpp
+    unittests.cpp
 )
 
 add_test(NAME ${This} COMMAND ${This})

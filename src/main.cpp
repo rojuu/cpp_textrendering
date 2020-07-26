@@ -1,15 +1,19 @@
+#include <cstdint>
+#include <vector>
+#include <unordered_map>
+#include <string>
+#include <fstream>
+#include <iostream>
+
 #include "SDL.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-#include <cstdint>
+#include <fmt/format.h>
 
-#include "Containers.hpp"
 #include "Utils.hpp"
-
 #include "Renderer.hpp"
-#include <iostream>
 
 class App {
     static constexpr int WIDTH = 1280;
