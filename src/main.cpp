@@ -20,32 +20,31 @@ class App {
     static constexpr int HEIGHT = 720;
 
     SDL_Window *m_window;
-    Renderer *m_renderer;
+    Renderer m_renderer;
 
-public:
-    bool init()
+    static SDL_Window *initAndCreateWindow()
     {
-        SDL_Init(SDL_INIT_VIDEO);
-        m_window = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
-
-        if (!m_window) {
-            printErr("Failed to create window: {}\n", SDL_GetError());
-            return false;
+        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+            throw std::runtime_error(fmt::format("Failed to init SDL {}\n", SDL_GetError()));
         }
+        SDL_Window *window = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED,
+            SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
 
-        m_renderer = Renderer::createRenderer(m_window);
-        if (!m_renderer) {
-            printErr("Failed to create renderer\n");
-            return false;
+        if (!window) {
+            throw std::runtime_error(fmt::format("Failed to create window: {}\n", SDL_GetError()));
         }
-
-        return true;
+        return window;
     }
 
-    void deinit()
+public:
+    App()
+        : m_window { initAndCreateWindow() }
+        , m_renderer { m_window }
     {
-        Renderer::destroyRenderer(m_renderer);
+    }
+
+    ~App() noexcept
+    {
         SDL_DestroyWindow(m_window);
         SDL_Quit();
     }
@@ -73,29 +72,29 @@ public:
                 }
             }
 
-            m_renderer->clear(91, 0, 176);
+            m_renderer.clear(91, 0, 176);
 
-            m_renderer->drawText("Heljo world!", 35, 200);
-            m_renderer->drawText("Wassup world!", 35, 250);
-            m_renderer->drawText("Heljo world!", 35, 350);
-            m_renderer->drawText("Wassup world!", 35, 400);
-            m_renderer->drawText("Wazzzaaaa!", 35, 500);
-            m_renderer->drawText("Larger text?", WIDTH / 2 - 100, HEIGHT / 2);
+            m_renderer.drawText("Heljo world!", 35, 200);
+            m_renderer.drawText("Wassup world!", 35, 250);
+            m_renderer.drawText("Heljo world!", 35, 350);
+            m_renderer.drawText("Wassup world!", 35, 400);
+            m_renderer.drawText("Wazzzaaaa!", 35, 500);
+            m_renderer.drawText("Larger text?", WIDTH / 2 - 100, HEIGHT / 2);
 
-            m_renderer->present();
+            m_renderer.present();
         }
     }
 };
 
-static App app;
-
 int main(int argc, char **argv)
 {
-    if (!app.init()) {
-        printErr("Failed to init application\n");
+    try {
+        const auto app = std::make_unique<App>();
+        app->run();
+    } catch (std::exception &e) {
+        std::cerr << "Unexepcted error during runtime: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    app.run();
-    app.deinit();
+
     return EXIT_SUCCESS;
 }

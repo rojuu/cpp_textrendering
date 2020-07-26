@@ -19,72 +19,55 @@ class Renderer {
     std::vector<uint8_t> m_pixels;
     std::vector<stbtt_bakedchar> m_charData;
 
-    Renderer() = default;
-
 public:
     static constexpr int DefaultFontPixelSize = 24;
 
-    static Renderer *createRenderer(SDL_Window *window)
+    explicit Renderer(SDL_Window *window)
     {
-        Renderer *renderer = new Renderer;
-
-        renderer->m_sdlRenderer
+        m_sdlRenderer
             = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        if (!renderer->m_sdlRenderer) {
-            printErr("Render backend failed to initalize SDL_Renderer: %\n", SDL_GetError());
-            delete renderer;
-            return nullptr;
+        if (!m_sdlRenderer) {
+            throw std::runtime_error(
+                fmt::format("Failed to initialize SDL_Renderer: {}", SDL_GetError()));
         }
 
-        renderer->m_currentFontData = readEntireBinaryFile("Roboto-Regular.ttf");
-        if (!renderer->m_currentFontData) {
-            printErr("Failed to load default font\n");
-            delete renderer;
-            return nullptr;
+        m_currentFontData = readEntireBinaryFile("Roboto-Regular.ttf");
+        if (!m_currentFontData) {
+            throw std::runtime_error("Failed to initialize SDL_Renderer");
         }
 
-        renderer->m_fontBufferWidth = 512;
-        renderer->m_fontBufferHeight = 512;
-        renderer->m_pixels.reserve(
-            renderer->m_fontBufferWidth * renderer->m_fontBufferHeight * sizeof(m_pixels[0]));
-        renderer->m_charData.resize(512);
-        const int bakeFontResult = stbtt_BakeFontBitmap(renderer->m_currentFontData, 0,
-            BufferFontPixelSize, renderer->m_pixels.data(), renderer->m_fontBufferWidth,
-            renderer->m_fontBufferHeight, 0, renderer->m_charData.size(),
-            renderer->m_charData.data());
+        m_fontBufferWidth = 512;
+        m_fontBufferHeight = 512;
+        m_pixels.reserve(m_fontBufferWidth * m_fontBufferHeight * sizeof(m_pixels[0]));
+        m_charData.resize(512);
+        const int bakeFontResult
+            = stbtt_BakeFontBitmap(m_currentFontData, 0, BufferFontPixelSize, m_pixels.data(),
+                m_fontBufferWidth, m_fontBufferHeight, 0, m_charData.size(), m_charData.data());
 
         if (bakeFontResult > 0) { // unused rows
         } else { // fit this many characters (abs)
-            renderer->m_charData.resize(std::abs(bakeFontResult));
+            m_charData.resize(std::abs(bakeFontResult));
         }
 
-        stbtt_InitFont(&renderer->m_currentFont, renderer->m_currentFontData, 0);
-
-        return renderer;
+        stbtt_InitFont(&m_currentFont, m_currentFontData, 0);
     }
 
-    static void destroyRenderer(Renderer *renderer)
+    ~Renderer() noexcept
     {
-        if (!renderer) {
-            return;
+        destroyFontCache();
+        if (m_sdlRenderer) {
+            SDL_DestroyRenderer(m_sdlRenderer);
         }
-
-        renderer->destroyFontCache();
-
-        SDL_DestroyRenderer(renderer->m_sdlRenderer);
-
-        freeBinaryFileContents(renderer->m_currentFontData);
-
-        delete renderer;
+        freeBinaryFileContents(m_currentFontData);
     }
 
-    void clear(uint8_t r, uint8_t g, uint8_t b)
+    void clear(uint8_t r, uint8_t g, uint8_t b) const noexcept
     {
         SDL_SetRenderDrawColor(m_sdlRenderer, r, g, b, 255);
         SDL_RenderClear(m_sdlRenderer);
     }
 
-    void present()
+    void present() const noexcept
     {
         const int w = m_fontBufferWidth, h = m_fontBufferHeight;
 
@@ -154,7 +137,7 @@ public:
     }
 
 private:
-    void destroyFontCache()
+    void destroyFontCache() const noexcept
     {
         // SDL_Textures need to be destroyed manually
         for (auto &it : m_glyphDataMap) {
@@ -174,7 +157,7 @@ private:
         *ptr = color;
     }
 
-    GlyphData createGlyphData(char character, int pixelSize)
+    GlyphData createGlyphData(char character, int pixelSize) const noexcept
     {
         GlyphData result = {};
 
@@ -227,7 +210,7 @@ private:
         return result;
     }
 
-    GlyphData getOrCreateGlyphData(char character, int pixelSize)
+    GlyphData getOrCreateGlyphData(char character, int pixelSize) noexcept
     {
         GlyphData result;
 
