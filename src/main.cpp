@@ -19,11 +19,7 @@ class App {
     static constexpr int WIDTH = 1280;
     static constexpr int HEIGHT = 720;
 
-    SDL_Window *m_window { initAndCreateWindow() };
-    Renderer m_renderer { m_window };
-
-    static SDL_Window *initAndCreateWindow()
-    {
+    SDL_Window *m_window { [] {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
             throw std::runtime_error(fmt::format("Failed to init SDL {}\n", SDL_GetError()));
         }
@@ -34,7 +30,8 @@ class App {
             throw std::runtime_error(fmt::format("Failed to create window: {}\n", SDL_GetError()));
         }
         return window;
-    }
+    }() };
+    Renderer m_renderer { m_window };
 
 public:
     App() = default;
