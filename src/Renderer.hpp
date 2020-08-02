@@ -1,4 +1,3 @@
-// TODO: draw using font buffer instead of individual glyphs
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
     stbtt_fontinfo m_currentFont;
@@ -93,33 +92,38 @@ public:
 
     void present() const noexcept { SDL_RenderPresent(m_sdlRenderer); }
 
-    void drawText(const char *text, int x, int y)
+    void drawText(const char *text, int x, int y) noexcept
     {
-        for (char ch = *text; *text != '\0'; ++text) {
-            const float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, 18.f);
+        for (int ch = 0; text[ch] != '\0'; ++ch) {
+            const float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, BufferFontPixelSize);
 
             int advance, leftSideBearing;
-            stbtt_GetCodepointHMetrics(&m_currentFont, ch, &advance, &leftSideBearing);
+            stbtt_GetCodepointHMetrics(&m_currentFont, text[ch], &advance, &leftSideBearing);
 
             float xamt = static_cast<int>(fontScale * advance);
 
             int x0, y0, x1, y1;
-            stbtt_GetCodepointBox(&m_currentFont, ch, &x0, &y0, &x1, &y1);
+            stbtt_GetCodepointBox(&m_currentFont, text[ch], &x0, &y0, &x1, &y1);
 
-            int width = x1 - x0;
-            int height = y1 - y0;
+            int w = x1 - x0;
+            int h = y1 - y0;
+
+            print("ch={}, x0={}, y0={}, x1={}, y1={}, advance={}, leftSideBearing={}\n", text[ch],
+                x0, y0, x1, y1, advance, leftSideBearing);
 
             SDL_Rect src;
-            src.w = m_fontBufferWidth;
-            src.h = m_fontBufferHeight;
-            src.x = 0;
-            src.y = 0;
-            SDL_Rect dst;
+            src.x = x0;
+            src.y = y0;
+            src.w = w;
+            src.h = h;
 
-            dst.w = width;
-            dst.h = height;
+            SDL_Rect dst;
+            dst.w = w * fontScale;
+            dst.h = h * fontScale;
             dst.x = x + xamt;
             dst.y = y;
+
+            // SDL_SetRenderDrawBlendMode(m_sdlRenderer, SDL_BLENDMODE_ADD);
             SDL_RenderCopy(m_sdlRenderer, m_currentFontTexture, &src, &dst);
 
             x += xamt;
@@ -128,7 +132,7 @@ public:
 
 private:
     static void setSurfacePixelColor(
-        SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+        SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
     {
         int off = y * surface->w + x;
         uint32_t *ptr = ((uint32_t *)surface->pixels) + off;
