@@ -103,47 +103,58 @@ public:
 
         const float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, BufferFontPixelSize);
 
-        // int ascent;
-        // stbtt_GetFontVMetrics(&m_currentFont, &ascent, 0, 0);
-        // const int baseline = static_cast<int>(ascent * fontScale);
+        int ascent;
+        stbtt_GetFontVMetrics(&m_currentFont, &ascent, 0, 0);
+        const float baseline = ascent * fontScale;
 
         for (int ch = 0; text[ch] != '\0'; ++ch) {
 
             int advance, leftSideBearing;
             stbtt_GetCodepointHMetrics(&m_currentFont, text[ch], &advance, &leftSideBearing);
 
-            float xamt = static_cast<int>(fontScale * advance);
-
             int x0, y0, x1, y1;
             stbtt_GetCodepointBox(&m_currentFont, text[ch], &x0, &y0, &x1, &y1);
+
+            x0 *= fontScale;
+            y0 *= fontScale;
+            x1 *= fontScale;
+            y1 *= fontScale;
+
+            // stbtt_GetCodepointBitmapBox(
+            //     &m_currentFont, text[ch], fontScale, fontScale, &x0, &y0, &x1, &y1);
             // y0 = std::abs(y0);
 
-            int w = x1 - x0;
-            int h = y1 - y0;
+            int w = std::abs(x1 - x0);
+            int h = std::abs(y1 - y0);
 
             print("ch={}, x0={}, y0={}, x1={}, y1={}, advance={}, leftSideBearing={}\n", text[ch],
                 x0, y0, x1, y1, advance, leftSideBearing);
 
             SDL_Rect src;
             src.x = x0;
-            src.y = y0;
+            src.y = -y0;
             src.w = w;
             src.h = h;
 
             SDL_Rect dst;
-            dst.w = w * fontScale;
-            dst.h = h * fontScale;
-            dst.x = x + xamt;
+            // dst.w = w * fontScale;
+            // dst.h = h * fontScale;
+            // dst.x = x;
+            // dst.y = y;
+
+            dst.x = x;
             dst.y = y;
+            dst.w = w;
+            dst.h = h;
 
             // SDL_SetRenderDrawBlendMode(m_sdlRenderer, SDL_BLENDMODE_ADD);
             SDL_RenderCopy(m_sdlRenderer, m_currentFontTexture, &src, &dst);
 
             SDL_Rect fontAccessRect;
-            fontAccessRect.x = fontTexRect.x + fontScale * x0;
-            fontAccessRect.y = fontTexRect.y + fontScale * y0;
-            fontAccessRect.h = w * fontScale;
-            fontAccessRect.w = h * fontScale;
+            fontAccessRect.x = fontTexRect.x + x0;
+            fontAccessRect.y = fontTexRect.y - y0;
+            fontAccessRect.h = w;
+            fontAccessRect.w = h;
 
             SDL_SetRenderDrawColor(m_sdlRenderer, 255, 0, 0, 255);
             SDL_RenderDrawRect(m_sdlRenderer, &fontAccessRect);
@@ -151,7 +162,7 @@ public:
             // SDL_Rect foo { 70, 600, 30, 30 };
             // SDL_RenderDrawRect(m_sdlRenderer, &foo);
 
-            x += xamt;
+            x += fontScale * advance;
             if (text[ch + 1]) {
                 x += fontScale
                     * stbtt_GetCodepointKernAdvance(&m_currentFont, text[ch], text[ch + 1]);
