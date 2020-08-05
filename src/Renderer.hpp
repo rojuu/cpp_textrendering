@@ -96,7 +96,7 @@ public:
 
     void present() const noexcept { SDL_RenderPresent(m_sdlRenderer); }
 
-    void drawText(const char *text, int x, int y) noexcept
+    void drawText(const char *text, int x, int y, float scale = 1.f) noexcept
     {
 #if 0
         SDL_Rect fontTexRect;
@@ -110,21 +110,18 @@ public:
         for (int ch = 0; text[ch] != '\0'; ++ch) {
             const stbtt_bakedchar &bc = m_font.charData[text[ch]];
 
-            SDL_Rect src;
-            src.x = bc.x0;
-            src.y = bc.y0;
-            src.w = bc.x1 - bc.x0;
-            src.h = bc.y1 - bc.y0;
-
-            SDL_Rect dst;
-            dst.x = x + bc.xoff;
-            dst.y = y + bc.yoff;
-            dst.w = bc.x1 - bc.x0;
-            dst.h = bc.y1 - bc.y0;
-
+            const int w = bc.x1 - bc.x0;
+            const int h = bc.y1 - bc.y0;
+            SDL_Rect src { bc.x0, bc.y0, w, h };
+            SDL_Rect dst {
+                static_cast<int>(x + bc.xoff * scale),
+                static_cast<int>(y + bc.yoff * scale),
+                static_cast<int>(w * scale),
+                static_cast<int>(h * scale),
+            };
             SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
-            x += bc.xadvance;
+            x += bc.xadvance * scale;
         }
     }
 

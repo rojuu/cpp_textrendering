@@ -23,8 +23,8 @@ class App {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
             throw std::runtime_error(fmt::format("Failed to init SDL {}\n", SDL_GetError()));
         }
-        SDL_Window *window = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED,
-            SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_MOUSE_CAPTURE);
+        SDL_Window *window = SDL_CreateWindow(
+            "rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, 0);
 
         if (!window) {
             throw std::runtime_error(fmt::format("Failed to create window: {}\n", SDL_GetError()));
@@ -71,12 +71,12 @@ public:
 
             m_renderer.clear(91, 0, 176);
 
-            m_renderer.drawText("Heljo world!", 35, 200);
-            // m_renderer.drawText("Wassup world!", 35, 250);
-            // m_renderer.drawText("Heljo world!", 35, 350);
-            // m_renderer.drawText("Wassup world!", 35, 400);
-            // m_renderer.drawText("Wazzzaaaa!", 35, 500);
-            // m_renderer.drawText("Larger text?", WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT / 2);
+            m_renderer.drawText("Heljo world!", 35, 200, 2);
+            m_renderer.drawText("Wassup world!", 35, 250, 0.35);
+            m_renderer.drawText("Heljo world!", 35, 350, 0.82);
+            m_renderer.drawText("Wassup world!", 35, 400, 0.83);
+            m_renderer.drawText("Wazzzaaaa!", 35, 500, 0.15);
+            m_renderer.drawText("Larger text?", WIDTH / 2 - 100, HEIGHT / 2, 5.331);
 
             m_renderer.present();
         }
