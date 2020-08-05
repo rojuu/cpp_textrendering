@@ -1,16 +1,19 @@
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
-    stbtt_fontinfo m_currentFont;
-    uint8_t *m_currentFontData;
-    int m_currentFontSize = -1;
-    std::string m_currentFontFile;
 
-    static constexpr int BufferFontPixelSize = 48;
-    int m_fontBufferWidth;
-    int m_fontBufferHeight;
-    std::vector<uint8_t> m_pixels;
-    std::vector<stbtt_bakedchar> m_charData;
-    SDL_Texture *m_currentFontTexture;
+    struct FontInfo {
+        uint8_t *currentData;
+        int currentSize = -1;
+        std::string currentFileName;
+
+        static constexpr int BufferPixelSize = 48;
+        int bufferWidth;
+        int bufferHeight;
+        std::vector<uint8_t> pixels;
+        std::vector<stbtt_bakedchar> charData;
+        SDL_Texture *currentTexture;
+    };
+    FontInfo m_font;
 
 public:
     static constexpr int DefaultFontPixelSize = 24;
@@ -24,29 +27,28 @@ public:
                 fmt::format("Failed to initialize SDL_Renderer: {}", SDL_GetError()));
         }
 
-        m_currentFontData = readEntireBinaryFile("Roboto-Regular.ttf");
-        if (!m_currentFontData) {
+        m_font.currentData = readEntireBinaryFile("Roboto-Regular.ttf");
+        if (!m_font.currentData) {
             throw std::runtime_error("Failed to initialize SDL_Renderer");
         }
 
-        m_fontBufferWidth = 512;
-        m_fontBufferHeight = 512;
-        m_pixels.reserve(m_fontBufferWidth * m_fontBufferHeight * sizeof(m_pixels[0]));
-        m_charData.resize(512);
-        const int bakeFontResult
-            = stbtt_BakeFontBitmap(m_currentFontData, 0, BufferFontPixelSize, m_pixels.data(),
-                m_fontBufferWidth, m_fontBufferHeight, 0, m_charData.size(), m_charData.data());
+        m_font.bufferWidth = 512;
+        m_font.bufferHeight = 512;
+        m_font.pixels.reserve(m_font.bufferWidth * m_font.bufferHeight * sizeof(m_font.pixels[0]));
+        m_font.charData.resize(512);
+        // TODO: Use Improved 3D API (stbtt_PackBegin, etc, maybe even stb_rect_pack.h)
+        const int bakeFontResult = stbtt_BakeFontBitmap(m_font.currentData, 0,
+            FontInfo::BufferPixelSize, m_font.pixels.data(), m_font.bufferWidth,
+            m_font.bufferHeight, 0, m_font.charData.size(), m_font.charData.data());
 
         if (bakeFontResult > 0) { // unused rows
         } else { // fit this many characters (abs)
-            m_charData.resize(std::abs(bakeFontResult));
+            m_font.charData.resize(std::abs(bakeFontResult));
         }
-
-        stbtt_InitFont(&m_currentFont, m_currentFontData, 0);
 
         // Init font texture
         {
-            int w = m_fontBufferWidth, h = m_fontBufferHeight;
+            int w = m_font.bufferWidth, h = m_font.bufferHeight;
 
             SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
             if (!surface) {
@@ -57,17 +59,19 @@ public:
             SDL_LockSurface(surface);
             for (int i = 0; i < surface->w && surface; ++i) {
                 for (int j = 0; j < surface->h; ++j) {
-                    uint8_t alpha = m_pixels[j * surface->w + i];
+                    uint8_t alpha = m_font.pixels[j * surface->w + i];
                     setSurfacePixelColor(surface, i, j, alpha, alpha, alpha, alpha);
                 }
             }
             SDL_UnlockSurface(surface);
 
-            m_currentFontTexture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
-            if (!m_currentFontTexture) {
+            m_font.currentTexture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
+            if (!m_font.currentTexture) {
                 throw std::runtime_error(
                     fmt::format("Failed to create SDL_Texture: {}\n", SDL_GetError()));
             }
+
+            SDL_SetTextureBlendMode(m_font.currentTexture, SDL_BLENDMODE_ADD);
         }
     }
 
@@ -76,7 +80,7 @@ public:
         if (m_sdlRenderer) {
             SDL_DestroyRenderer(m_sdlRenderer);
         }
-        freeBinaryFileContents(m_currentFontData);
+        freeBinaryFileContents(m_font.currentData);
     }
 
     Renderer(const Renderer &) = delete;
@@ -94,79 +98,33 @@ public:
 
     void drawText(const char *text, int x, int y) noexcept
     {
+#if 0
         SDL_Rect fontTexRect;
         fontTexRect.x = 720;
         fontTexRect.y = 70;
         fontTexRect.h = 512;
         fontTexRect.w = 512;
-        SDL_RenderCopy(m_sdlRenderer, m_currentFontTexture, nullptr, &fontTexRect);
-
-        const float fontScale = stbtt_ScaleForPixelHeight(&m_currentFont, BufferFontPixelSize);
-
-        int ascent;
-        stbtt_GetFontVMetrics(&m_currentFont, &ascent, 0, 0);
-        const float baseline = ascent * fontScale;
+        SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, nullptr, &fontTexRect);
+#endif
 
         for (int ch = 0; text[ch] != '\0'; ++ch) {
-
-            int advance, leftSideBearing;
-            stbtt_GetCodepointHMetrics(&m_currentFont, text[ch], &advance, &leftSideBearing);
-
-            int x0, y0, x1, y1;
-            stbtt_GetCodepointBox(&m_currentFont, text[ch], &x0, &y0, &x1, &y1);
-
-            x0 *= fontScale;
-            y0 *= fontScale;
-            x1 *= fontScale;
-            y1 *= fontScale;
-
-            // stbtt_GetCodepointBitmapBox(
-            //     &m_currentFont, text[ch], fontScale, fontScale, &x0, &y0, &x1, &y1);
-            // y0 = std::abs(y0);
-
-            int w = std::abs(x1 - x0);
-            int h = std::abs(y1 - y0);
-
-            print("ch={}, x0={}, y0={}, x1={}, y1={}, advance={}, leftSideBearing={}\n", text[ch],
-                x0, y0, x1, y1, advance, leftSideBearing);
+            const stbtt_bakedchar &bc = m_font.charData[text[ch]];
 
             SDL_Rect src;
-            src.x = x0;
-            src.y = -y0;
-            src.w = w;
-            src.h = h;
+            src.x = bc.x0;
+            src.y = bc.y0;
+            src.w = bc.x1 - bc.x0;
+            src.h = bc.y1 - bc.y0;
 
             SDL_Rect dst;
-            // dst.w = w * fontScale;
-            // dst.h = h * fontScale;
-            // dst.x = x;
-            // dst.y = y;
+            dst.x = x + bc.xoff;
+            dst.y = y + bc.yoff;
+            dst.w = bc.x1 - bc.x0;
+            dst.h = bc.y1 - bc.y0;
 
-            dst.x = x;
-            dst.y = y;
-            dst.w = w;
-            dst.h = h;
+            SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
-            // SDL_SetRenderDrawBlendMode(m_sdlRenderer, SDL_BLENDMODE_ADD);
-            SDL_RenderCopy(m_sdlRenderer, m_currentFontTexture, &src, &dst);
-
-            SDL_Rect fontAccessRect;
-            fontAccessRect.x = fontTexRect.x + x0;
-            fontAccessRect.y = fontTexRect.y - y0;
-            fontAccessRect.h = w;
-            fontAccessRect.w = h;
-
-            SDL_SetRenderDrawColor(m_sdlRenderer, 255, 0, 0, 255);
-            SDL_RenderDrawRect(m_sdlRenderer, &fontAccessRect);
-
-            // SDL_Rect foo { 70, 600, 30, 30 };
-            // SDL_RenderDrawRect(m_sdlRenderer, &foo);
-
-            x += fontScale * advance;
-            if (text[ch + 1]) {
-                x += fontScale
-                    * stbtt_GetCodepointKernAdvance(&m_currentFont, text[ch], text[ch + 1]);
-            }
+            x += bc.xadvance;
         }
     }
 
