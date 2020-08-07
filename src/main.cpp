@@ -5,15 +5,14 @@
 #include <fstream>
 #include <iostream>
 
+#include "Utils.hpp"
+#include "Renderer.hpp"
+
 #include "SDL.h"
+#include <fmt/format.h>
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
-
-#include <fmt/format.h>
-
-#include "Utils.hpp"
-#include "Renderer.hpp"
 
 class App {
     static constexpr int WIDTH = 1280;

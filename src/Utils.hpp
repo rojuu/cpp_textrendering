@@ -1,11 +1,26 @@
+#pragma once
+
+#include <fmt/format.h>
+
+#include <cstdint>
+#include <fstream>
+#include <iostream>
+
 template <typename Func>
-struct DeferWrapper {
+class DeferWrapper {
     Func f;
-    DeferWrapper(Func f)
+
+public:
+    explicit DeferWrapper(Func f)
         : f(f)
     {
     }
     ~DeferWrapper() { f(); }
+
+    DeferWrapper(const DeferWrapper &) = delete;
+    DeferWrapper &operator=(const DeferWrapper &) = delete;
+    DeferWrapper(DeferWrapper &&) = delete;
+    DeferWrapper &operator=(DeferWrapper &&) = delete;
 };
 
 template <typename Func>
@@ -32,16 +47,16 @@ inline uint8_t *readEntireBinaryFile(const char *filename)
     }
 
     size_t size = file.tellg();
-    file.seekg(file.beg);
+    file.seekg(std::ifstream::beg);
 
-    uint8_t *data = new uint8_t[size];
+    auto *data = new uint8_t[size];
 
-    file.read((char *)data, size);
+    file.read(reinterpret_cast<char *>(data), size);
 
     return data;
 }
 
-inline void freeBinaryFileContents(uint8_t *contents)
+inline void freeBinaryFileContents(const uint8_t *contents)
 {
     delete[] contents;
 }

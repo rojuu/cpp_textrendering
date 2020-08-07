@@ -1,0 +1,10 @@
+Checks:
+'*,
+-readability-implicit-bool-conversion,
+-modernize-use-trailing-return-type,
+-google-readability-todo,
+-fuchsia-default-arguments-declarations,
+-hicpp-uppercase-literal-suffix,
+-readability-uppercase-literal-suffix,
+-cppcoreguidelines-pro-bounds-pointer-arithmetic,
+'

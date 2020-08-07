@@ -1,17 +1,30 @@
+#pragma once
+
+#include "Utils.hpp"
+
+#include "SDL.h"
+#include "stb_truetype.h"
+
+#include <fmt/format.h>
+
+#include <string>
+#include <vector>
+#include <stdexcept>
+
 class Renderer {
     SDL_Renderer *m_sdlRenderer;
 
     struct FontInfo {
-        uint8_t *currentData;
+        uint8_t *currentData {};
         int currentSize = -1;
         std::string currentFileName;
 
         static constexpr int BufferPixelSize = 48;
-        int bufferWidth;
-        int bufferHeight;
+        int bufferWidth {};
+        int bufferHeight {};
         std::vector<uint8_t> pixels;
         std::vector<stbtt_bakedchar> charData;
-        SDL_Texture *currentTexture;
+        SDL_Texture *currentTexture {};
     };
     FontInfo m_font;
 
@@ -48,7 +61,8 @@ public:
 
         // Init font texture
         {
-            int w = m_font.bufferWidth, h = m_font.bufferHeight;
+            int w = m_font.bufferWidth;
+            int h = m_font.bufferHeight;
 
             SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
             if (!surface) {
@@ -130,7 +144,7 @@ private:
         SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
     {
         int off = y * surface->w + x;
-        uint32_t *ptr = ((uint32_t *)surface->pixels) + off;
+        uint32_t *ptr = (static_cast<uint32_t *>(surface->pixels)) + off;
         uint32_t color = SDL_MapRGBA(surface->format, r, g, b, a);
         *ptr = color;
     }
