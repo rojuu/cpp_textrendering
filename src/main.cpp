@@ -2,7 +2,6 @@
 #include "SDL.h"
 #include "SDL_video.h"
 #include "Utils.hpp"
-#include <fmt/format.h>
 
 class App {
 public:

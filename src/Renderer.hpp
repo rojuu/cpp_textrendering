@@ -1,10 +1,7 @@
 #pragma once
 
 #include "SDL.h"
-#include "Utils.hpp"
 #include "stb_truetype.h"
-#include <fmt/format.h>
-#include <stdexcept>
 #include <string>
 #include <vector>
 

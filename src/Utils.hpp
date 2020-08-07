@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 inline std::vector<uint8_t> readEntireBinaryFile(const char *filename)
 {
