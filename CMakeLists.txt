@@ -8,6 +8,7 @@ add_subdirectory(tests)
 
 add_executable(${This}
     src/main.cpp
+    src/Renderer.cpp
 )
 
 set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
