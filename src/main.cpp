@@ -1,14 +1,6 @@
-#include <cstdint>
-#include <vector>
-#include <unordered_map>
-#include <string>
-#include <fstream>
-#include <iostream>
-
-#include "Utils.hpp"
 #include "Renderer.hpp"
-
 #include "SDL.h"
+#include "Utils.hpp"
 #include <fmt/format.h>
 
 #define STB_TRUETYPE_IMPLEMENTATION

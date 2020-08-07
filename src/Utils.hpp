@@ -1,8 +1,7 @@
 #pragma once
 
-#include <fmt/format.h>
-
 #include <cstdint>
+#include <fmt/format.h>
 #include <fstream>
 #include <iostream>
 
