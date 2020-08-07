@@ -128,14 +128,14 @@ public:
             const int h = bc.y1 - bc.y0;
             SDL_Rect src { bc.x0, bc.y0, w, h };
             SDL_Rect dst {
-                static_cast<int>(x + bc.xoff * scale),
-                static_cast<int>(y + bc.yoff * scale),
-                static_cast<int>(w * scale),
-                static_cast<int>(h * scale),
+                static_cast<int>(static_cast<float>(x) + bc.xoff * scale),
+                static_cast<int>(static_cast<float>(y) + bc.yoff * scale),
+                static_cast<int>(static_cast<float>(w) * scale),
+                static_cast<int>(static_cast<float>(h) * scale),
             };
             SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
-            x += bc.xadvance * scale;
+            x += static_cast<int>(bc.xadvance * scale);
         }
     }
 

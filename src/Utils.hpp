@@ -6,37 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-template <typename Func>
-class DeferWrapper {
-    Func f;
-
-public:
-    explicit DeferWrapper(Func f)
-        : f(f)
-    {
-    }
-    ~DeferWrapper() { f(); }
-
-    DeferWrapper(const DeferWrapper &) = delete;
-    DeferWrapper &operator=(const DeferWrapper &) = delete;
-    DeferWrapper(DeferWrapper &&) = delete;
-    DeferWrapper &operator=(DeferWrapper &&) = delete;
-};
-
-template <typename Func>
-DeferWrapper<Func> deferFunc(Func f)
-{
-    return DeferWrapper<Func>(f);
-}
-
-#define CONCAT2(x, y) x##y
-#define CONCAT(x, y) CONCAT2(x, y)
-#define DEFER_C(x) CONCAT(x, __LINE__)
-#define defer(code)                                                                                \
-    auto DEFER_C(_defer_) = deferFunc([&]() {                                                      \
-        code;                                                                                      \
-    })
-
 inline uint8_t *readEntireBinaryFile(const char *filename)
 {
     std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
@@ -50,7 +19,6 @@ inline uint8_t *readEntireBinaryFile(const char *filename)
     file.seekg(std::ifstream::beg);
 
     auto *data = new uint8_t[size];
-
     file.read(reinterpret_cast<char *>(data), size);
 
     return data;
