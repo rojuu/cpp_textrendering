@@ -12,7 +12,7 @@ class Renderer {
     SDL_Renderer *m_sdlRenderer;
 
     struct FontInfo {
-        uint8_t *currentData {};
+        std::vector<uint8_t> currentData;
         int currentSize = -1;
         std::string currentFileName;
 
@@ -38,7 +38,7 @@ public:
         }
 
         m_font.currentData = readEntireBinaryFile("Roboto-Regular.ttf");
-        if (!m_font.currentData) {
+        if (m_font.currentData.empty()) {
             throw std::runtime_error("Failed to initialize SDL_Renderer");
         }
 
@@ -47,7 +47,7 @@ public:
         m_font.pixels.reserve(m_font.bufferWidth * m_font.bufferHeight * sizeof(m_font.pixels[0]));
         m_font.charData.resize(512);
         // TODO: Use Improved 3D API (stbtt_PackBegin, etc, maybe even stb_rect_pack.h)
-        const int bakeFontResult = stbtt_BakeFontBitmap(m_font.currentData, 0,
+        const int bakeFontResult = stbtt_BakeFontBitmap(m_font.currentData.data(), 0,
             FontInfo::BufferPixelSize, m_font.pixels.data(), m_font.bufferWidth,
             m_font.bufferHeight, 0, m_font.charData.size(), m_font.charData.data());
 
@@ -91,7 +91,6 @@ public:
         if (m_sdlRenderer) {
             SDL_DestroyRenderer(m_sdlRenderer);
         }
-        freeBinaryFileContents(m_font.currentData);
     }
 
     Renderer(const Renderer &) = delete;

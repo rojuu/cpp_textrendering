@@ -5,27 +5,25 @@
 #include <fstream>
 #include <iostream>
 
-inline uint8_t *readEntireBinaryFile(const char *filename)
+inline std::vector<uint8_t> readEntireBinaryFile(const char *filename)
 {
+    std::vector<uint8_t> result;
+
     std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
 
     if (!file.is_open()) {
         std::cerr << "Failed to open file " << filename << "\n";
-        return nullptr;
+        return result;
     }
 
     size_t size = file.tellg();
     file.seekg(std::ifstream::beg);
 
-    auto *data = new uint8_t[size];
-    file.read(reinterpret_cast<char *>(data), size);
+    result.resize(size);
+    // NOLINTNEXTLINE
+    file.read(reinterpret_cast<char *>(result.data()), size);
 
-    return data;
-}
-
-inline void freeBinaryFileContents(const uint8_t *contents)
-{
-    delete[] contents;
+    return result;
 }
 
 template <typename... Args>
