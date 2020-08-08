@@ -3,3 +3,4 @@
 /.ignore
 /compile_commands.json
 /.clangd
+/*.dll

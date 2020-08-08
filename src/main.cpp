@@ -81,7 +81,7 @@ SDL_Window *App::initSDLWindow()
     return window;
 }
 
-int main(int /*argc*/, char ** /*argv*/)
+int run()
 {
     try {
         const auto app = std::make_unique<App>();
@@ -93,3 +93,16 @@ int main(int /*argc*/, char ** /*argv*/)
 
     return EXIT_SUCCESS;
 }
+
+int main(int /*argc*/, char ** /*argv*/)
+{
+    return run();
+}
+
+#ifdef WIN32
+#include <windows.h>
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+{
+    return run();
+}
+#endif
