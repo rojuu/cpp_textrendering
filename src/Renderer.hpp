@@ -28,13 +28,12 @@ private:
     SDL_Renderer *m_sdlRenderer;
 
     struct FontInfo {
-        std::vector<uint8_t> currentData;
-        int currentSize = -1;
-        std::string currentFileName;
-
         static constexpr int BufferPixelSize = 48;
+
         int bufferWidth {};
         int bufferHeight {};
+
+        std::vector<uint8_t> currentData;
         std::vector<uint8_t> pixels;
         std::vector<stbtt_bakedchar> charData;
         SDL_Texture *currentTexture {};

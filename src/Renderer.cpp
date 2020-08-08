@@ -20,7 +20,7 @@ Renderer::Renderer(SDL_Window *window)
 
     m_font.bufferWidth = 512;
     m_font.bufferHeight = 512;
-    m_font.pixels.reserve(m_font.bufferWidth * m_font.bufferHeight * sizeof(m_font.pixels[0]));
+    m_font.pixels.resize(m_font.bufferWidth * m_font.bufferHeight * sizeof(m_font.pixels[0]));
     m_font.charData.resize(512);
     // TODO: Use Improved 3D API (stbtt_PackBegin, etc, maybe even stb_rect_pack.h)
     const int bakeFontResult = stbtt_BakeFontBitmap(m_font.currentData.data(), 0,
