@@ -28,6 +28,26 @@ inline std::vector<uint8_t> readEntireBinaryFile(const char *filename)
     return result;
 }
 
+inline std::string readEntireTextFile(const char *filename)
+{
+    std::string result;
+
+    std::ifstream file(filename, std::ifstream::ate);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file " << filename << "\n";
+        return result;
+    }
+
+    size_t size = file.tellg();
+    file.seekg(std::ifstream::beg);
+
+    result.resize(size);
+    file.read(reinterpret_cast<char *>(result.data()), size);
+
+    return result;
+}
+
 template <typename... Args>
 void print(const char *fmt, Args... rest)
 {

@@ -17,7 +17,7 @@ public:
 
     void clear(uint8_t r, uint8_t g, uint8_t b) const noexcept;
     void present() const noexcept;
-    void drawText(const char *text, int x, int y, float scale = 1.f) noexcept;
+    void drawText(const char *text, int x, int y) noexcept;
 
 private:
     static void setSurfacePixelColor(
@@ -28,11 +28,12 @@ private:
     SDL_Renderer *m_sdlRenderer;
 
     struct FontInfo {
-        static constexpr int BufferPixelSize = 48;
+        static constexpr int BufferPixelSize = 18;
 
         int bufferWidth {};
         int bufferHeight {};
 
+        stbtt_fontinfo info;
         std::vector<uint8_t> currentData;
         std::vector<uint8_t> pixels;
         std::vector<stbtt_bakedchar> charData;

@@ -13,7 +13,7 @@ Renderer::Renderer(SDL_Window *window)
             fmt::format("Failed to initialize SDL_Renderer: {}", SDL_GetError()));
     }
 
-    m_font.currentData = readEntireBinaryFile("Roboto-Regular.ttf");
+    m_font.currentData = readEntireBinaryFile("FiraMono.ttf");
     if (m_font.currentData.empty()) {
         throw std::runtime_error("Failed to initialize SDL_Renderer");
     }
@@ -31,6 +31,8 @@ Renderer::Renderer(SDL_Window *window)
     } else { // fit this many characters (abs)
         m_font.charData.resize(std::abs(bakeFontResult));
     }
+
+    stbtt_InitFont(&m_font.info, m_font.currentData.data(), 0);
 
     // Init font texture
     {
@@ -80,7 +82,7 @@ void Renderer::present() const noexcept
     SDL_RenderPresent(m_sdlRenderer);
 }
 
-void Renderer::drawText(const char *text, int x, int y, float scale) noexcept
+void Renderer::drawText(const char *text, int _x, int _y) noexcept
 {
 #if 0
         SDL_Rect fontTexRect;
@@ -91,21 +93,35 @@ void Renderer::drawText(const char *text, int x, int y, float scale) noexcept
         SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, nullptr, &fontTexRect);
 #endif
 
+    int ascent, descent, lineGap;
+    stbtt_GetFontVMetrics(&m_font.info, &ascent, &descent, &lineGap);
+
+    float scale = stbtt_ScaleForPixelHeight(&m_font.info, FontInfo::BufferPixelSize);
+    float yadvance = (ascent - descent + lineGap) * scale;
+
+    int x = _x;
+    int y = _y;
     for (int ch = 0; text[ch] != '\0'; ++ch) {
         const stbtt_bakedchar &bc = m_font.charData[text[ch]];
+
+        if (text[ch] == '\n') {
+            x = _x;
+            y += yadvance;
+            continue;
+        }
 
         const int w = bc.x1 - bc.x0;
         const int h = bc.y1 - bc.y0;
         SDL_Rect src { bc.x0, bc.y0, w, h };
         SDL_Rect dst {
-            static_cast<int>(static_cast<float>(x) + bc.xoff * scale),
-            static_cast<int>(static_cast<float>(y) + bc.yoff * scale),
-            static_cast<int>(static_cast<float>(w) * scale),
-            static_cast<int>(static_cast<float>(h) * scale),
+            static_cast<int>(static_cast<float>(x) + bc.xoff),
+            static_cast<int>(static_cast<float>(y) + bc.yoff),
+            static_cast<int>(static_cast<float>(w)),
+            static_cast<int>(static_cast<float>(h)),
         };
         SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
-        x += static_cast<int>(bc.xadvance * scale);
+        x += static_cast<int>(bc.xadvance);
     }
 }
 

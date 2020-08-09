@@ -33,6 +33,8 @@ App::~App() noexcept
 
 void App::run()
 {
+    std::string fileContents = readEntireTextFile("src/Renderer.hpp");
+
     bool quit = false;
     while (!quit) {
         SDL_Event sdlEvent;
@@ -54,15 +56,8 @@ void App::run()
             }
         }
 
-        m_renderer.clear(91, 0, 176);
-
-        m_renderer.drawText("Heljo world!", 35, 200, 2);
-        m_renderer.drawText("Wassup world!", 35, 250, 0.35);
-        m_renderer.drawText("Heljo world!", 35, 350, 0.82);
-        m_renderer.drawText("Wassup world!", 35, 400, 0.83);
-        m_renderer.drawText("Wazzzaaaa!", 35, 500, 0.15);
-        m_renderer.drawText("Larger text?", WIDTH / 2 - 100, HEIGHT / 2, 5.331);
-
+        m_renderer.clear(0, 0, 0);
+        m_renderer.drawText(fileContents.c_str(), 10, 15);
         m_renderer.present();
     }
 }
