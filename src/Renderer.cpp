@@ -113,12 +113,7 @@ void Renderer::drawText(const char *text, int _x, int _y) noexcept
         const int w = bc.x1 - bc.x0;
         const int h = bc.y1 - bc.y0;
         SDL_Rect src { bc.x0, bc.y0, w, h };
-        SDL_Rect dst {
-            static_cast<int>(static_cast<float>(x) + bc.xoff),
-            static_cast<int>(static_cast<float>(y) + bc.yoff),
-            static_cast<int>(static_cast<float>(w)),
-            static_cast<int>(static_cast<float>(h)),
-        };
+        SDL_Rect dst { static_cast<int>(x + bc.xoff), static_cast<int>(y + bc.yoff), w, h };
         SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
         x += static_cast<int>(bc.xadvance);
