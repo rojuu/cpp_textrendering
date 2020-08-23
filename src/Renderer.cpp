@@ -4,10 +4,27 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-Renderer::Renderer(SDL_Window *window)
+namespace {
+
+static constexpr int WINDOW_WIDTH = 1280;
+static constexpr int WINDOW_HEIGHT = 720;
+
+} // namespace
+
+Renderer::Renderer(const char *windowName)
 {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        throw std::runtime_error(fmt::format("Failed to init SDL {}\n", SDL_GetError()));
+    }
+    m_sdlWindow = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+
+    if (!m_sdlWindow) {
+        throw std::runtime_error(fmt::format("Failed to create window: {}\n", SDL_GetError()));
+    }
+
     m_sdlRenderer
-        = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        = SDL_CreateRenderer(m_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!m_sdlRenderer) {
         throw std::runtime_error(
             fmt::format("Failed to initialize SDL_Renderer: {}", SDL_GetError()));
@@ -34,6 +51,7 @@ Renderer::Renderer(SDL_Window *window)
 
     stbtt_InitFont(&m_font.info, m_font.currentData.data(), 0);
 
+#if 1
     // Init font texture
     {
         int w = m_font.bufferWidth;
@@ -62,6 +80,7 @@ Renderer::Renderer(SDL_Window *window)
 
         SDL_SetTextureBlendMode(m_font.currentTexture, SDL_BLENDMODE_ADD);
     }
+#endif
 }
 
 Renderer::~Renderer() noexcept
@@ -69,6 +88,9 @@ Renderer::~Renderer() noexcept
     if (m_sdlRenderer) {
         SDL_DestroyRenderer(m_sdlRenderer);
     }
+
+    SDL_DestroyWindow(m_sdlWindow);
+    SDL_Quit();
 }
 
 void Renderer::clear(uint8_t r, uint8_t g, uint8_t b) const noexcept

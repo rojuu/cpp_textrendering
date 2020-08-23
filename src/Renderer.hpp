@@ -7,7 +7,7 @@
 
 class Renderer {
 public:
-    explicit Renderer(SDL_Window *window);
+    explicit Renderer(const char *windowName);
     ~Renderer() noexcept;
 
     Renderer(const Renderer &) = delete;
@@ -25,6 +25,7 @@ private:
 
     static constexpr int DefaultFontPixelSize = 24;
 
+    SDL_Window *m_sdlWindow;
     SDL_Renderer *m_sdlRenderer;
 
     struct FontInfo {
