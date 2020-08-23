@@ -2,11 +2,10 @@
 #include "SDL.h"
 #include "Utils.hpp"
 
-int run()
-{
-    try {
-        auto renderer = std::make_unique<Renderer>("rojueditor");
-
+class App {
+public:
+    void run()
+    {
         std::string fileContents = readEntireTextFile("src/Renderer.hpp");
 
         bool quit = false;
@@ -30,10 +29,21 @@ int run()
                 }
             }
 
-            renderer->clear(0, 0, 0);
-            renderer->drawText(fileContents.c_str(), 10, 15);
-            renderer->present();
+            m_renderer.clear(0, 0, 0);
+            m_renderer.drawText(fileContents.c_str(), 10, 15);
+            m_renderer.present();
         }
+    }
+
+private:
+    Renderer m_renderer { "rojueditor" };
+};
+
+int run()
+{
+    try {
+        auto app = std::make_unique<App>();
+        app->run();
     } catch (std::exception &e) {
         std::cerr << "Unexepcted error during runtime: " << e.what() << std::endl;
         return EXIT_FAILURE;
