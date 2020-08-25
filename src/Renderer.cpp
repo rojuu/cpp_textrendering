@@ -1,9 +1,6 @@
 #include "Renderer.hpp"
 #include "Utils.hpp"
 
-#define STB_TRUETYPE_IMPLEMENTATION
-#include "stb_truetype.h"
-
 namespace {
 
 constexpr int WINDOW_WIDTH = 1280;
