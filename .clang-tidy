@@ -11,5 +11,6 @@ Checks:
 -readability-magic-numbers,
 -readability-isolate-declaration,
 -misc-non-private-member-variables-in-classes,
+-hicpp-signed-bitwise,
 -fuchsia-*,
 '

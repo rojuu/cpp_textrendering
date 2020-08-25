@@ -4,6 +4,17 @@
 #include "SDL.h"
 #include "stb_truetype.h"
 
+struct Color32 {
+    Color32(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a)
+        : r(_r)
+        , g(_g)
+        , b(_b)
+        , a(_a)
+    {
+    }
+    uint8_t r, g, b, a;
+};
+
 class Renderer {
 public:
     Renderer() = default;
@@ -18,20 +29,18 @@ public:
 
     void clear(uint8_t r, uint8_t g, uint8_t b) const noexcept;
     void present() const noexcept;
-    void drawText(const char *text, int x, int y) noexcept;
+    void drawText(const char *text, int x, int y, Color32 color = { 0, 0, 0, 255 }) noexcept;
 
 private:
-    static void setSurfacePixelColor(
-        SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept;
+    static void setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color) noexcept;
 
-    static constexpr int DefaultFontPixelSize = 24;
+    static constexpr int DefaultFontPixelSize = 20; ///< Specify font size in pixels
 
     SDL_Window *m_sdlWindow {};
     SDL_Renderer *m_sdlRenderer {};
 
     struct FontInfo {
         FontInfo() = default;
-        static constexpr int BufferPixelSize = 18;
 
         int bufferWidth {};
         int bufferHeight {};

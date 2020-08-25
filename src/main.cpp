@@ -33,8 +33,8 @@ public:
                 }
             }
 
-            m_renderer.clear(0, 0, 0);
-            m_renderer.drawText(fileContents.c_str(), 10, 15);
+            m_renderer.clear(255, 255, 255);
+            m_renderer.drawText(fileContents.c_str(), 10, 15, Color32 { 0, 0, 0, 255 });
             m_renderer.present();
         }
     }

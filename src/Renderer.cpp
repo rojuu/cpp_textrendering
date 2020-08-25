@@ -1,5 +1,4 @@
 #include "Renderer.hpp"
-#include "SDL_error.h"
 #include "Utils.hpp"
 
 namespace {
@@ -39,7 +38,7 @@ bool Renderer::init(const char *windowName)
     m_font.charData.resize(512);
     // TODO: Use Improved 3D API (stbtt_PackBegin, etc, maybe even stb_rect_pack.h)
     const int bakeFontResult = stbtt_BakeFontBitmap(m_font.currentData.data(), 0,
-        FontInfo::BufferPixelSize, m_font.pixels.data(), m_font.bufferWidth, m_font.bufferHeight, 0,
+        DefaultFontPixelSize, m_font.pixels.data(), m_font.bufferWidth, m_font.bufferHeight, 0,
         m_font.charData.size(), m_font.charData.data());
 
     if (bakeFontResult > 0) { // unused rows
@@ -49,13 +48,13 @@ bool Renderer::init(const char *windowName)
 
     stbtt_InitFont(&m_font.info, m_font.currentData.data(), 0);
 
-#if 1
     // Init font texture
     {
         int w = m_font.bufferWidth;
         int h = m_font.bufferHeight;
 
-        SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+        SDL_Surface *surface
+            = SDL_CreateRGBSurface(0, w, h, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
         if (!surface) {
             fmt::print(stderr, "Failed to create SDL_Surface: {}\n", SDL_GetError());
             return false;
@@ -65,7 +64,7 @@ bool Renderer::init(const char *windowName)
         for (int i = 0; i < surface->w && surface; ++i) {
             for (int j = 0; j < surface->h; ++j) {
                 uint8_t alpha = m_font.pixels[j * surface->w + i];
-                setSurfacePixelColor(surface, i, j, alpha, alpha, alpha, alpha);
+                setSurfacePixelColor(surface, i, j, { 255, 255, 255, alpha });
             }
         }
         SDL_UnlockSurface(surface);
@@ -75,10 +74,8 @@ bool Renderer::init(const char *windowName)
             fmt::print(stderr, "Failed to create SDL_Texture: {}\n", SDL_GetError());
             return false;
         }
-
-        SDL_SetTextureBlendMode(m_font.currentTexture, SDL_BLENDMODE_ADD);
     }
-#endif
+
     return true;
 }
 
@@ -102,7 +99,7 @@ void Renderer::present() const noexcept
     SDL_RenderPresent(m_sdlRenderer);
 }
 
-void Renderer::drawText(const char *text, int _x, int _y) noexcept
+void Renderer::drawText(const char *text, int _x, int _y, Color32 color) noexcept
 {
 #if 0
         SDL_Rect fontTexRect;
@@ -116,7 +113,7 @@ void Renderer::drawText(const char *text, int _x, int _y) noexcept
     int ascent = 0, descent = 0, lineGap = 0;
     stbtt_GetFontVMetrics(&m_font.info, &ascent, &descent, &lineGap);
 
-    float scale = stbtt_ScaleForPixelHeight(&m_font.info, FontInfo::BufferPixelSize);
+    float scale = stbtt_ScaleForPixelHeight(&m_font.info, DefaultFontPixelSize);
     float yadvance = static_cast<float>(ascent - descent + lineGap) * scale;
 
     int x = _x;
@@ -134,17 +131,17 @@ void Renderer::drawText(const char *text, int _x, int _y) noexcept
         const int h = bc.y1 - bc.y0;
         SDL_Rect src { bc.x0, bc.y0, w, h };
         SDL_Rect dst { x + static_cast<int>(bc.xoff), y + static_cast<int>(bc.yoff), w, h };
+        SDL_SetTextureColorMod(m_font.currentTexture, color.r, color.g, color.b);
+        SDL_SetTextureAlphaMod(m_font.currentTexture, color.a);
         SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
         x += static_cast<int>(bc.xadvance);
     }
 }
 
-void Renderer::setSurfacePixelColor(
-    SDL_Surface *surface, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
+void Renderer::setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color) noexcept
 {
     int off = y * surface->w + x;
     uint32_t *ptr = (static_cast<uint32_t *>(surface->pixels)) + off;
-    uint32_t color = SDL_MapRGBA(surface->format, r, g, b, a);
-    *ptr = color;
+    *ptr = SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a);
 }
