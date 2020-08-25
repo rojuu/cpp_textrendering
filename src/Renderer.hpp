@@ -30,6 +30,7 @@ private:
     SDL_Renderer *m_sdlRenderer {};
 
     struct FontInfo {
+        FontInfo() = default;
         static constexpr int BufferPixelSize = 18;
 
         int bufferWidth {};
