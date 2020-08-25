@@ -10,4 +10,5 @@ Checks:
 -cppcoreguidelines-avoid-magic-numbers,
 -readability-magic-numbers,
 -readability-isolate-declaration,
+-fuchsia-statically-constructed-objects,
 '

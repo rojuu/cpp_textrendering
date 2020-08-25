@@ -1,19 +1,20 @@
 #pragma once
 
+#include "Common.hpp"
 #include "SDL.h"
 #include "stb_truetype.h"
-#include <string>
-#include <vector>
 
 class Renderer {
 public:
-    explicit Renderer(const char *windowName);
+    Renderer() = default;
     ~Renderer() noexcept;
 
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
     Renderer(Renderer &&) = delete;
     Renderer &operator=(Renderer &&) = delete;
+
+    bool init(const char *windowName);
 
     void clear(uint8_t r, uint8_t g, uint8_t b) const noexcept;
     void present() const noexcept;
@@ -25,8 +26,8 @@ private:
 
     static constexpr int DefaultFontPixelSize = 24;
 
-    SDL_Window *m_sdlWindow;
-    SDL_Renderer *m_sdlRenderer;
+    SDL_Window *m_sdlWindow {};
+    SDL_Renderer *m_sdlRenderer {};
 
     struct FontInfo {
         static constexpr int BufferPixelSize = 18;
@@ -34,11 +35,11 @@ private:
         int bufferWidth {};
         int bufferHeight {};
 
-        stbtt_fontinfo info;
+        stbtt_fontinfo info {};
         std::vector<uint8_t> currentData;
         std::vector<uint8_t> pixels;
         std::vector<stbtt_bakedchar> charData;
         SDL_Texture *currentTexture {};
     };
-    FontInfo m_font;
+    FontInfo m_font {};
 };

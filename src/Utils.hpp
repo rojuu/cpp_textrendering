@@ -1,11 +1,7 @@
 #pragma once
 
-#include <cstdint>
-#include <exception>
-#include <fmt/format.h>
-#include <fstream>
+#include "Common.hpp"
 #include <iostream>
-#include <stdexcept>
 
 inline std::vector<uint8_t> readEntireBinaryFile(const char *filename)
 {
@@ -46,16 +42,4 @@ inline std::string readEntireTextFile(const char *filename)
     file.read(result.data(), size);
 
     return result;
-}
-
-template <typename... Args>
-void print(const char *fmt, Args... rest)
-{
-    fmt::print(stdout, fmt, std::forward<Args>(rest)...);
-}
-
-template <typename... Args>
-void printErr(const char *fmt, Args... rest)
-{
-    fmt::print(stderr, fmt, std::forward<Args>(rest)...);
 }

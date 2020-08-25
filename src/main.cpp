@@ -1,9 +1,13 @@
+#include "Common.hpp"
 #include "Renderer.hpp"
 #include "SDL.h"
+#include "SDL_error.h"
 #include "Utils.hpp"
+#include <ostream>
 
 class App {
 public:
+    bool init() { return m_renderer.init("rojueditor"); }
     void run()
     {
         std::string fileContents = readEntireTextFile("src/Renderer.hpp");
@@ -36,16 +40,37 @@ public:
     }
 
 private:
-    Renderer m_renderer { "rojueditor" };
+    Renderer m_renderer;
 };
+
+namespace {
+
+App app;
+
+} // namespace
 
 int run()
 {
+    // TODO: Once we can be sure we're not using exceptions from 3rd party code (e.g. STL),
+    // use -fno-exceptions and don't have this try-catch here
     try {
-        auto app = std::make_unique<App>();
-        app->run();
+        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+            std::cerr << "Failed to init SDL: " << SDL_GetError()
+                      << std::endl; // intentionally flush with std::endl here, as we are exiting
+            return false;
+        }
+
+        if (!app.init()) {
+            std::cerr << "Failed to initialize App, exiting!"
+                      << std::endl; // intentionally flush with std::endl here, as we are exiting
+            return EXIT_FAILURE;
+        }
+        app.run();
+
+        SDL_Quit();
     } catch (std::exception &e) {
-        std::cerr << "Unexepcted error during runtime: " << e.what() << std::endl;
+        std::cerr << "Unexepcted error during runtime: " << e.what()
+                  << std::endl; // intentionally flush with std::endl here, as we are exiting
         return EXIT_FAILURE;
     }
 

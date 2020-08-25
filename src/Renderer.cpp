@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+#include "SDL_error.h"
 #include "Utils.hpp"
 
 namespace {
@@ -8,28 +9,28 @@ constexpr int WINDOW_HEIGHT = 720;
 
 } // namespace
 
-Renderer::Renderer(const char *windowName)
+bool Renderer::init(const char *windowName)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        throw std::runtime_error(fmt::format("Failed to init SDL {}\n", SDL_GetError()));
-    }
     m_sdlWindow = SDL_CreateWindow(windowName, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 
     if (!m_sdlWindow) {
-        throw std::runtime_error(fmt::format("Failed to create window: {}\n", SDL_GetError()));
+        std::cerr << "Failed to create window: " << SDL_GetError() << "\n";
+        return false;
     }
 
     m_sdlRenderer
         = SDL_CreateRenderer(m_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!m_sdlRenderer) {
-        throw std::runtime_error(
-            fmt::format("Failed to initialize SDL_Renderer: {}", SDL_GetError()));
+        std::cerr << "Failed to initialize SDL_Renderer: " << SDL_GetError() << "\n";
+        return false;
     }
 
-    m_font.currentData = readEntireBinaryFile("FiraMono.ttf");
+    constexpr auto fontFile = "FiraMono.ttf";
+    m_font.currentData = readEntireBinaryFile(fontFile);
     if (m_font.currentData.empty()) {
-        throw std::runtime_error("Failed to initialize SDL_Renderer");
+        std::cerr << "Failed to load font file: " << fontFile << "\n";
+        return false;
     }
 
     m_font.bufferWidth = 512;
@@ -56,8 +57,8 @@ Renderer::Renderer(const char *windowName)
 
         SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
         if (!surface) {
-            throw std::runtime_error(
-                fmt::format("Failed to create SDL_Surface: {}\n", SDL_GetError()));
+            std::cerr << "Failed to create SDL_Surface: " << SDL_GetError() << "\n";
+            return false;
         }
 
         SDL_LockSurface(surface);
@@ -71,13 +72,14 @@ Renderer::Renderer(const char *windowName)
 
         m_font.currentTexture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
         if (!m_font.currentTexture) {
-            throw std::runtime_error(
-                fmt::format("Failed to create SDL_Texture: {}\n", SDL_GetError()));
+            std::cerr << "Failed to create SDL_Texture: " << SDL_GetError() << "\n";
+            return false;
         }
 
         SDL_SetTextureBlendMode(m_font.currentTexture, SDL_BLENDMODE_ADD);
     }
 #endif
+    return true;
 }
 
 Renderer::~Renderer() noexcept
@@ -87,7 +89,6 @@ Renderer::~Renderer() noexcept
     }
 
     SDL_DestroyWindow(m_sdlWindow);
-    SDL_Quit();
 }
 
 void Renderer::clear(uint8_t r, uint8_t g, uint8_t b) const noexcept
