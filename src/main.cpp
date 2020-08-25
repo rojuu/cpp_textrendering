@@ -52,7 +52,7 @@ int run()
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char **argv)
+int main(int /*argc*/, char ** /*argv*/)
 {
     return run();
 }

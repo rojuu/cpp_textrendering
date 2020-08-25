@@ -6,8 +6,8 @@
 
 namespace {
 
-static constexpr int WINDOW_WIDTH = 1280;
-static constexpr int WINDOW_HEIGHT = 720;
+constexpr int WINDOW_WIDTH = 1280;
+constexpr int WINDOW_HEIGHT = 720;
 
 } // namespace
 
@@ -16,7 +16,7 @@ Renderer::Renderer(const char *windowName)
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         throw std::runtime_error(fmt::format("Failed to init SDL {}\n", SDL_GetError()));
     }
-    m_sdlWindow = SDL_CreateWindow("rojuide", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    m_sdlWindow = SDL_CreateWindow(windowName, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 
     if (!m_sdlWindow) {
@@ -115,11 +115,11 @@ void Renderer::drawText(const char *text, int _x, int _y) noexcept
         SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, nullptr, &fontTexRect);
 #endif
 
-    int ascent, descent, lineGap;
+    int ascent = 0, descent = 0, lineGap = 0;
     stbtt_GetFontVMetrics(&m_font.info, &ascent, &descent, &lineGap);
 
     float scale = stbtt_ScaleForPixelHeight(&m_font.info, FontInfo::BufferPixelSize);
-    float yadvance = (ascent - descent + lineGap) * scale;
+    float yadvance = static_cast<float>(ascent - descent + lineGap) * scale;
 
     int x = _x;
     int y = _y;
@@ -128,14 +128,14 @@ void Renderer::drawText(const char *text, int _x, int _y) noexcept
 
         if (text[ch] == '\n') {
             x = _x;
-            y += yadvance;
+            y += static_cast<int>(yadvance);
             continue;
         }
 
         const int w = bc.x1 - bc.x0;
         const int h = bc.y1 - bc.y0;
         SDL_Rect src { bc.x0, bc.y0, w, h };
-        SDL_Rect dst { static_cast<int>(x + bc.xoff), static_cast<int>(y + bc.yoff), w, h };
+        SDL_Rect dst { x + static_cast<int>(bc.xoff), y + static_cast<int>(bc.yoff), w, h };
         SDL_RenderCopy(m_sdlRenderer, m_font.currentTexture, &src, &dst);
 
         x += static_cast<int>(bc.xadvance);
