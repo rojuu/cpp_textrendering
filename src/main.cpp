@@ -55,22 +55,19 @@ int run()
     // use -fno-exceptions and don't have this try-catch here
     try {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-            std::cerr << "Failed to init SDL: " << SDL_GetError()
-                      << std::endl; // intentionally flush with std::endl here, as we are exiting
+            fmt::print(stderr, "Failed to init SDL: {}\n", SDL_GetError());
             return false;
         }
 
         if (!app.init()) {
-            std::cerr << "Failed to initialize App, exiting!"
-                      << std::endl; // intentionally flush with std::endl here, as we are exiting
+            fmt::print(stderr, "Failed to initialize App, exiting!\n");
             return EXIT_FAILURE;
         }
         app.run();
 
         SDL_Quit();
     } catch (std::exception &e) {
-        std::cerr << "Unexepcted error during runtime: " << e.what()
-                  << std::endl; // intentionally flush with std::endl here, as we are exiting
+        fmt::print(stderr, "Unexepcted error during runtime: {}\n", e.what());
         return EXIT_FAILURE;
     }
 
