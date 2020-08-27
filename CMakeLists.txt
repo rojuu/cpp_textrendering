@@ -13,6 +13,7 @@ add_executable(${This}
 )
 
 set_property(TARGET ${This} PROPERTY CXX_STANDARD 17)
+target_compile_options(${This} PUBLIC -Wall -Wextra -Wpedantic)
 target_link_libraries(${This} PRIVATE SDL2)
 target_link_libraries(${This} PRIVATE fmt)
 target_include_directories(${This} PRIVATE deps/include)
