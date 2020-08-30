@@ -8,7 +8,7 @@ bool Renderer::init(SDL_Renderer *sdlRenderer)
     constexpr auto fontFile = "FiraMono.ttf";
     m_font.currentData = readEntireBinaryFile(fontFile);
     if (m_font.currentData.empty()) {
-        fmt::print(stderr, "Failed to load font file: {}\n", fontFile);
+        LOG_ERR() << fmt::format("Failed to load font file: {}\n", fontFile);
         return false;
     }
 
@@ -36,7 +36,7 @@ bool Renderer::init(SDL_Renderer *sdlRenderer)
         SDL_Surface *surface
             = SDL_CreateRGBSurface(0, w, h, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
         if (!surface) {
-            fmt::print(stderr, "Failed to create SDL_Surface: {}\n", SDL_GetError());
+            LOG_ERR() << fmt::format("Failed to create SDL_Surface: {}\n", SDL_GetError());
             return false;
         }
 
@@ -51,7 +51,7 @@ bool Renderer::init(SDL_Renderer *sdlRenderer)
 
         m_font.currentTexture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
         if (!m_font.currentTexture) {
-            fmt::print(stderr, "Failed to create SDL_Texture: {}\n", SDL_GetError());
+            LOG_ERR() << fmt::format("Failed to create SDL_Texture: {}\n", SDL_GetError());
             return false;
         }
     }

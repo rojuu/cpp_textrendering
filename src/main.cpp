@@ -18,7 +18,7 @@ public:
     bool init()
     {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-            fmt::print(stderr, "Failed to init SDL: {}\n", SDL_GetError());
+            LOG_ERR() << fmt::format("Failed to init SDL: {}\n", SDL_GetError());
             return false;
         }
 
@@ -26,19 +26,19 @@ public:
             SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 
         if (!m_sdlWindow) {
-            fmt::print(stderr, "Failed to create window: {}\n", SDL_GetError());
+            LOG_ERR() << fmt::format("Failed to create window: {}\n", SDL_GetError());
             return false;
         }
 
         m_sdlRenderer = SDL_CreateRenderer(
             m_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (!m_sdlRenderer) {
-            fmt::print(stderr, "Failed to initialize SDL_Renderer: {}\n", SDL_GetError());
+            LOG_ERR() << fmt::format("Failed to initialize SDL_Renderer: {}\n", SDL_GetError());
             return false;
         }
 
         if (!m_renderer.init(m_sdlRenderer)) {
-            fmt::print(stderr, "Failed to init Renderer");
+            LOG_ERR() << fmt::format("Failed to init Renderer\n");
             return false;
         }
 
@@ -95,7 +95,7 @@ int run()
 {
     App app;
     if (!app.init()) {
-        fmt::print(stderr, "Failed to initialize App, exiting!\n");
+        LOG_ERR() << fmt::format("Failed to initialize App, exiting!\n");
         return EXIT_FAILURE;
     }
     app.run();

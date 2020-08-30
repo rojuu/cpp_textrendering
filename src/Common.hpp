@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <fmt/format.h>
+#include <iostream>
 
 // TODO: Don't use STL containers to avoid unhandled bad_alloc exceptions
 // as we compile with -fno-exceptions
@@ -26,3 +27,7 @@
 #define DELETE_COPYABLE_AND_MOVEABLE(C) \
     DELETE_MOVEABLE(C);                 \
     DELETE_COPYABLE(C)
+
+#define LOG() std::cout
+#define LOG_DEBUG() std::cout
+#define LOG_ERR() std::cerr
