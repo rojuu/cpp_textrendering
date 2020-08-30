@@ -1,29 +1,9 @@
 #include "Renderer.hpp"
 #include "Utils.hpp"
 
-namespace {
-
-constexpr int WINDOW_WIDTH = 1280;
-constexpr int WINDOW_HEIGHT = 720;
-
-} // namespace
-
-bool Renderer::init(const char *windowName)
+bool Renderer::init(SDL_Renderer *sdlRenderer)
 {
-    m_sdlWindow = SDL_CreateWindow(windowName, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        WINDOW_WIDTH, WINDOW_HEIGHT, 0);
-
-    if (!m_sdlWindow) {
-        fmt::print(stderr, "Failed to create window: {}\n", SDL_GetError());
-        return false;
-    }
-
-    m_sdlRenderer
-        = SDL_CreateRenderer(m_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!m_sdlRenderer) {
-        fmt::print(stderr, "Failed to initialize SDL_Renderer: {}\n", SDL_GetError());
-        return false;
-    }
+    m_sdlRenderer = sdlRenderer;
 
     constexpr auto fontFile = "FiraMono.ttf";
     m_font.currentData = readEntireBinaryFile(fontFile);
@@ -79,27 +59,18 @@ bool Renderer::init(const char *windowName)
     return true;
 }
 
-Renderer::~Renderer() noexcept
-{
-    if (m_sdlRenderer) {
-        SDL_DestroyRenderer(m_sdlRenderer);
-    }
-
-    SDL_DestroyWindow(m_sdlWindow);
-}
-
-void Renderer::clear(uint8_t r, uint8_t g, uint8_t b) const noexcept
+void Renderer::clear(uint8_t r, uint8_t g, uint8_t b) const
 {
     SDL_SetRenderDrawColor(m_sdlRenderer, r, g, b, 255);
     SDL_RenderClear(m_sdlRenderer);
 }
 
-void Renderer::present() const noexcept
+void Renderer::present() const
 {
     SDL_RenderPresent(m_sdlRenderer);
 }
 
-void Renderer::drawText(const char *text, int _x, int _y, Color32 color) noexcept
+void Renderer::drawText(const char *text, int _x, int _y, Color32 color)
 {
 #if 0
         SDL_Rect fontTexRect;
@@ -139,7 +110,7 @@ void Renderer::drawText(const char *text, int _x, int _y, Color32 color) noexcep
     }
 }
 
-void Renderer::setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color) noexcept
+void Renderer::setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color)
 {
     int off = y * surface->w + x;
     uint32_t *ptr = (static_cast<uint32_t *>(surface->pixels)) + off;

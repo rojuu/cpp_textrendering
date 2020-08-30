@@ -3,11 +3,57 @@
 #include "SDL.h"
 #include "SDL_error.h"
 #include "Utils.hpp"
-#include <ostream>
+
+namespace {
+
+constexpr int WINDOW_WIDTH = 1280;
+constexpr int WINDOW_HEIGHT = 720;
+
+} // namespace
 
 class App {
 public:
-    bool init() { return m_renderer.init("rojueditor"); }
+    App() = default;
+
+    bool init()
+    {
+        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+            fmt::print(stderr, "Failed to init SDL: {}\n", SDL_GetError());
+            return false;
+        }
+
+        m_sdlWindow = SDL_CreateWindow("rojueditor", SDL_WINDOWPOS_UNDEFINED,
+            SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+
+        if (!m_sdlWindow) {
+            fmt::print(stderr, "Failed to create window: {}\n", SDL_GetError());
+            return false;
+        }
+
+        m_sdlRenderer = SDL_CreateRenderer(
+            m_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        if (!m_sdlRenderer) {
+            fmt::print(stderr, "Failed to initialize SDL_Renderer: {}\n", SDL_GetError());
+            return false;
+        }
+
+        if (!m_renderer.init(m_sdlRenderer)) {
+            fmt::print(stderr, "Failed to init Renderer");
+            return false;
+        }
+
+        return true;
+    }
+
+    DELETE_COPYABLE_AND_MOVEABLE(App);
+
+    ~App()
+    {
+        SDL_DestroyRenderer(m_sdlRenderer);
+        SDL_DestroyWindow(m_sdlWindow);
+        SDL_Quit();
+    }
+
     void run()
     {
         std::string fileContents = readEntireTextFile("src/Renderer.hpp");
@@ -40,36 +86,19 @@ public:
     }
 
 private:
+    SDL_Window *m_sdlWindow { nullptr };
+    SDL_Renderer *m_sdlRenderer { nullptr };
     Renderer m_renderer;
 };
 
-namespace {
-
-App app;
-
-} // namespace
-
 int run()
 {
-    // TODO: Once we can be sure we're not using exceptions from 3rd party code (e.g. STL),
-    // use -fno-exceptions and don't have this try-catch here
-    try {
-        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-            fmt::print(stderr, "Failed to init SDL: {}\n", SDL_GetError());
-            return false;
-        }
-
-        if (!app.init()) {
-            fmt::print(stderr, "Failed to initialize App, exiting!\n");
-            return EXIT_FAILURE;
-        }
-        app.run();
-
-        SDL_Quit();
-    } catch (std::exception &e) {
-        fmt::print(stderr, "Unexepcted error during runtime: {}\n", e.what());
+    App app;
+    if (!app.init()) {
+        fmt::print(stderr, "Failed to initialize App, exiting!\n");
         return EXIT_FAILURE;
     }
+    app.run();
 
     return EXIT_SUCCESS;
 }

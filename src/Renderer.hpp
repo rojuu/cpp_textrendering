@@ -18,25 +18,20 @@ struct Color32 {
 class Renderer {
 public:
     Renderer() = default;
-    ~Renderer() noexcept;
+    ~Renderer() = default;
+    DELETE_COPYABLE_AND_MOVEABLE(Renderer);
 
-    Renderer(const Renderer &) = delete;
-    Renderer &operator=(const Renderer &) = delete;
-    Renderer(Renderer &&) = delete;
-    Renderer &operator=(Renderer &&) = delete;
+    bool init(SDL_Renderer *sdlRenderer);
 
-    bool init(const char *windowName);
-
-    void clear(uint8_t r, uint8_t g, uint8_t b) const noexcept;
-    void present() const noexcept;
-    void drawText(const char *text, int x, int y, Color32 color = { 0, 0, 0, 255 }) noexcept;
+    void clear(uint8_t r, uint8_t g, uint8_t b) const;
+    void present() const;
+    void drawText(const char *text, int x, int y, Color32 color = { 0, 0, 0, 255 });
 
 private:
-    static void setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color) noexcept;
+    static void setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color);
 
     static constexpr int DefaultFontPixelSize = 20; ///< Specify font size in pixels
 
-    SDL_Window *m_sdlWindow {};
     SDL_Renderer *m_sdlRenderer {};
 
     struct FontInfo {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.hpp"
-#include <iostream>
+#include <fstream>
 
 inline std::vector<uint8_t> readEntireBinaryFile(const char *filename)
 {
@@ -10,7 +10,7 @@ inline std::vector<uint8_t> readEntireBinaryFile(const char *filename)
     std::ifstream file(filename, std::ifstream::binary | std::ifstream::ate);
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open file " << filename << "\n";
+        fmt::print(stderr, "Failed to open file '{}'\n", filename);
         return result;
     }
 
@@ -31,7 +31,7 @@ inline std::string readEntireTextFile(const char *filename)
     std::ifstream file(filename, std::ifstream::ate);
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open file " << filename << "\n";
+        fmt::print(stderr, "Failed to open file '{}'\n", filename);
         return result;
     }
 
