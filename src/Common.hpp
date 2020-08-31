@@ -1,9 +1,8 @@
 #include <cstdint>
+#include <exception>
 #include <fmt/format.h>
 #include <iostream>
-
-// TODO: Don't use STL containers to avoid unhandled bad_alloc exceptions
-// as we compile with -fno-exceptions
+#include <stdexcept>
 #include <vector>
 
 #define DEFAULT_MOVEABLE(C) \
@@ -11,14 +10,14 @@
     C &operator=(C &&) = default;
 #define DEFAULT_COPYABLE(C) \
     C(const C &) = default; \
-    C &operator=(const C &) = default;
+    C &operator=(const C &) = default
 
 #define DELETE_MOVEABLE(C) \
     C(C &&) = delete;      \
-    C &operator=(C &&) = delete;
+    C &operator=(C &&) = delete
 #define DELETE_COPYABLE(C) \
     C(const C &) = delete; \
-    C &operator=(const C &) = delete;
+    C &operator=(const C &) = delete
 
 #define DEFAULT_COPYABLE_AND_MOVEABLE(C) \
     DEFAULT_MOVEABLE(C);                 \

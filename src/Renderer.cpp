@@ -1,15 +1,14 @@
 #include "Renderer.hpp"
 #include "Utils.hpp"
 
-bool Renderer::init(SDL_Renderer *sdlRenderer)
+Renderer::Renderer(SDL_Renderer *sdlRenderer)
 {
     m_sdlRenderer = sdlRenderer;
 
     constexpr auto fontFile = "FiraMono.ttf";
     m_font.currentData = readEntireBinaryFile(fontFile);
     if (m_font.currentData.empty()) {
-        LOG_ERR() << fmt::format("Failed to load font file: {}\n", fontFile);
-        return false;
+        throw std::runtime_error(fmt::format("Failed to load font file: {}\n", fontFile));
     }
 
     m_font.bufferWidth = 512;
@@ -36,8 +35,8 @@ bool Renderer::init(SDL_Renderer *sdlRenderer)
         SDL_Surface *surface
             = SDL_CreateRGBSurface(0, w, h, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
         if (!surface) {
-            LOG_ERR() << fmt::format("Failed to create SDL_Surface: {}\n", SDL_GetError());
-            return false;
+            throw std::runtime_error(
+                fmt::format("Failed to create SDL_Surface: {}\n", SDL_GetError()));
         }
 
         SDL_LockSurface(surface);
@@ -51,26 +50,24 @@ bool Renderer::init(SDL_Renderer *sdlRenderer)
 
         m_font.currentTexture = SDL_CreateTextureFromSurface(m_sdlRenderer, surface);
         if (!m_font.currentTexture) {
-            LOG_ERR() << fmt::format("Failed to create SDL_Texture: {}\n", SDL_GetError());
-            return false;
+            throw std::runtime_error(
+                fmt::format("Failed to create SDL_Texture: {}\n", SDL_GetError()));
         }
     }
-
-    return true;
 }
 
-void Renderer::clear(uint8_t r, uint8_t g, uint8_t b) const
+void Renderer::clear(Color32 color) const noexcept
 {
-    SDL_SetRenderDrawColor(m_sdlRenderer, r, g, b, 255);
+    SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.g, color.b, color.a);
     SDL_RenderClear(m_sdlRenderer);
 }
 
-void Renderer::present() const
+void Renderer::present() const noexcept
 {
     SDL_RenderPresent(m_sdlRenderer);
 }
 
-void Renderer::drawText(const char *text, int _x, int _y, Color32 color)
+void Renderer::drawText(const char *text, int _x, int _y, Color32 color) noexcept
 {
 #if 0
         SDL_Rect fontTexRect;
@@ -110,7 +107,7 @@ void Renderer::drawText(const char *text, int _x, int _y, Color32 color)
     }
 }
 
-void Renderer::setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color)
+void Renderer::setSurfacePixelColor(SDL_Surface *surface, int x, int y, Color32 color) noexcept
 {
     int off = y * surface->w + x;
     uint32_t *ptr = (static_cast<uint32_t *>(surface->pixels)) + off;
