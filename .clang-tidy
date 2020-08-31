@@ -13,4 +13,6 @@ Checks:
 -misc-non-private-member-variables-in-classes,
 -hicpp-signed-bitwise,
 -fuchsia-*,
+-llvm-header-guard,
+-cppcoreguidelines-macro-usage,
 '

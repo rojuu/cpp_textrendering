@@ -34,6 +34,7 @@ class Renderer {
 
 public:
     explicit Renderer(SDL_Renderer *sdlRenderer);
+    ~Renderer() = default;
     DELETE_COPYABLE_AND_MOVEABLE(Renderer);
 
     void clear(Color32 color) const noexcept;
