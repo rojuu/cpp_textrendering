@@ -39,7 +39,7 @@ inline std::string readEntireTextFile(const char *filename)
     file.seekg(std::ifstream::beg);
 
     result.resize(size);
-    file.read(result.data(), size);
+    file.read(&result[0], size);
 
     return result;
 }

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 
-set(This rojueditor)
+set(This cpp_textrendering)
 project(${This})
 
 add_subdirectory(deps)
+
+enable_testing()
 add_subdirectory(tests)
 
 set(SOURCES

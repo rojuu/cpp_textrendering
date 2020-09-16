@@ -65,7 +65,7 @@ private:
             throw std::runtime_error(fmt::format("Failed to init SDL: {}\n", SDL_GetError()));
         }
 
-        SDL_Window *sdlWindow = SDL_CreateWindow("rojueditor", SDL_WINDOWPOS_UNDEFINED,
+        SDL_Window *sdlWindow = SDL_CreateWindow("cpp_textrendering", SDL_WINDOWPOS_UNDEFINED,
             SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 
         if (!sdlWindow) {
